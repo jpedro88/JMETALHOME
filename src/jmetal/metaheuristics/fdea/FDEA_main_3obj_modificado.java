@@ -133,8 +133,8 @@ public class FDEA_main_3obj_modificado{
 		fileHandler_ = new FileHandler("NSGAIII_main.log");
 		logger_.addHandler(fileHandler_);
 
-		//	for(int fun=13;fun<=39;fun++){
-		int runtimes=1;
+
+		int runtimes=10;
 		double[] IGDarray=new double[runtimes];
 		double[] HVarray = new double[runtimes];
 		long Execution_time=0;
@@ -253,6 +253,7 @@ public class FDEA_main_3obj_modificado{
 			}
 
 		}
+	for(int fun=0;fun<=9;fun++){
 
 		algorithm = new FDEA(problem);
 
@@ -301,7 +302,7 @@ public class FDEA_main_3obj_modificado{
 		algorithm.addOperator("mutation", mutation);
 		algorithm.addOperator("selection", selection);
 		var teste=10;
-		for(int i=0;i<=teste;i++){
+		for(int i=0;i<teste;i++){
 			long initTime = System.currentTimeMillis();
 			SolutionSet population = algorithm.execute();
 			Execution_time+=(System.currentTimeMillis() - initTime);
@@ -313,6 +314,7 @@ public class FDEA_main_3obj_modificado{
 			wfghvCalculator1 wfg = new wfghvCalculator1(population);
 			HVarray[i] = wfg.calculatewfghv();
 		}
+	}//for-fun
 		//printGD("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"_IGD.txt",IGDarray);
 		//printGD("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"_HV.txt",HVarray);
 		double sumIGD=0;
@@ -324,6 +326,6 @@ public class FDEA_main_3obj_modificado{
 		logger_.info("Total execution time: " + Execution_time + "ms");
 		System.out.println("avrIGD-fun= "+sumIGD/runtimes);
 		System.out.println("avrHV-fun= "+sumHV/runtimes);
-//	 }//for-fun
+
 	}//main
 }
