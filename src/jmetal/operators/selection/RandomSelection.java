@@ -44,67 +44,67 @@ public class RandomSelection extends Selection {
 	 *            Object representing a SolutionSet.
 	 * @return an object representing an array with the selected parents
 	 */
-//	public Object execute(Object object) {
-//		SolutionSet population = (SolutionSet) object;
-//		int pos1, pos2;
-//		pos1 = PseudoRandom.randInt(0, population.size() - 1);
-//		pos2 = PseudoRandom.randInt(0, population.size() - 1);
-//		while ((pos1 == pos2) && (population.size() > 1)) {
-//			pos2 = PseudoRandom.randInt(0, population.size() - 1);
-//		}
-//
-//		Solution[] parents = new Solution[2];
-//		parents[0] = population.get(pos1);
-//		parents[1] = population.get(pos2);
-//
-//		return parents;
-//	} // Execute
-
-	public Object execute(Object object){
-		SolutionSet solutionSet = (SolutionSet) object;
-		Solution solution1, solution2, solution3, solution4;
-		solution1 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-		solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-		solution3 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-		solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+	public Object execute(Object object) {
+		SolutionSet population = (SolutionSet) object;
+		int pos1, pos2;
+		pos1 = PseudoRandom.randInt(0, population.size() - 1);
+		pos2 = PseudoRandom.randInt(0, population.size() - 1);
+		while ((pos1 == pos2) && (population.size() > 1)) {
+			pos2 = PseudoRandom.randInt(0, population.size() - 1);
+		}
 
 		Solution[] parents = new Solution[2];
 		parents[0] = population.get(pos1);
 		parents[1] = population.get(pos2);
 
-
-		if (solutionSet.size() >= 2)
-			while (solution1 == solution2)
-				solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-
-		int flag = comparator_.compare(solution1,solution2);
-		if (flag == -1)
-			parents[0] = solution1;
-		else if (flag == 1)
-			parents[0] = solution2;
-		else
-		if (PseudoRandom.randDouble()<0.5)
-			parents[0] = solution1;
-		else
-			parents[0]= solution2;
-
-		if (solutionSet.size() >= 2)
-			while (solution3 == solution4)
-				solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-
-		int flag = comparator_.compare(solution3,solution4);
-		if (flag == -1)
-			parents[1] = solution3;
-		else if (flag == 1)
-			parents[1] = solution4;
-		else
-		if (PseudoRandom.randDouble()<0.5)
-			parents[1] = solution3;
-		else
-			parents[1]= solution4;
-
 		return parents;
-	} // execute
+	} // Execute
+
+//	public Object execute(Object object){
+//		SolutionSet solutionSet = (SolutionSet) object;
+//		Solution solution1, solution2, solution3, solution4;
+//		solution1 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//		solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//		solution3 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//		solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//
+//		Solution[] parents = new Solution[2];
+//		parents[0] = population.get(pos1);
+//		parents[1] = population.get(pos2);
+//
+//
+//		if (solutionSet.size() >= 2)
+//			while (solution1 == solution2)
+//				solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//
+//		int flag = comparator_.compare(solution1,solution2);
+//		if (flag == -1)
+//			parents[0] = solution1;
+//		else if (flag == 1)
+//			parents[0] = solution2;
+//		else
+//		if (PseudoRandom.randDouble()<0.5)
+//			parents[0] = solution1;
+//		else
+//			parents[0]= solution2;
+//
+//		if (solutionSet.size() >= 2)
+//			while (solution3 == solution4)
+//				solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//
+//		int flag = comparator_.compare(solution3,solution4);
+//		if (flag == -1)
+//			parents[1] = solution3;
+//		else if (flag == 1)
+//			parents[1] = solution4;
+//		else
+//		if (PseudoRandom.randDouble()<0.5)
+//			parents[1] = solution3;
+//		else
+//			parents[1]= solution4;
+//
+//		return parents;
+//	} // execute
 
 	@Override
 	public Object execute(Object object, double delta) throws JMException {

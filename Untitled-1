@@ -1,0 +1,5 @@
+ export CLASSPATH=$CLASSPATH:$JMETALHOME\src
+ export CLASSPATH=$CLASSPATH:$JMETALHOME
+ export CLASSPATH=$CLASSPATH\src:Jama-1.0.3.jar
+javac jmetal/metaheuristics/fdea/FDEA_main_3obj.java
+java jmetal.metaheuristics.fdea.FDEA_main_3obj.java

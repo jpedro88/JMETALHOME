@@ -1,0 +1,12 @@
+baseFolder="/media/temp/Dropbox/UFPR/Doutorado/cuda-pso/actual/results"
+metrica="igd"
+
+#for swarms in NewIMulti5 NewIMulti10 NewIMulti15 NewIMulti20 NewIMulti25 NewIMulti IMulti;  do
+for problem in 1 2 3 4 5 6 7; do
+    for objectives in 3 5 10 15 20; do     
+	echo "**************DTLZ$problem $objectives  ***********"
+	java friedman "$baseFolder/IMulti30-$objectives-DTLZ$problem"_$metrica.txt"" "$baseFolder/NewIMulti30.JustEDA-$objectives-DTLZ$problem"_$metrica.txt""
+	echo "***********************************************"
+	
+    done
+done

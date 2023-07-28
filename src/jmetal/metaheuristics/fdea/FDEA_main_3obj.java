@@ -126,7 +126,7 @@ public class FDEA_main_3obj {
         logger_.addHandler(fileHandler_);
 
         for (int fun = 6; fun <= 39; fun++) {
-            int runtimes = 1;
+            int runtimes = 10;
             double[] IGDarray = new double[runtimes];
             double[] HVarray = new double[runtimes];
             long Execution_time = 0;
@@ -168,6 +168,7 @@ public class FDEA_main_3obj {
 
                 }
                 if (fun == 8) {
+                    System.out.println("DTLZ3 - 3 obj");
                     problem = new DTLZ3("Real", 12, 3);
 
 
@@ -382,7 +383,7 @@ public class FDEA_main_3obj {
                 sumHV += HVarray[i];
             }
             logger_.info("Total execution time: " + Execution_time + "ms");
-            System.out.println("avrIGD-fun" + fun + "= " + sumIGD / runtimes);
+//            System.out.println("avrIGD-fun" + fun + "= " + sumIGD / runtimes);
             System.out.println("avrHV-fun" + fun + "= " + sumHV / runtimes);
         }//for-fun
     }

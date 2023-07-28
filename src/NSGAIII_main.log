@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
+<record>
+  <date>2023-07-28T19:50:29.881896Z</date>
+  <millis>1690573829881</millis>
+  <nanos>896000</nanos>
+  <sequence>0</sequence>
+  <logger>jMetal</logger>
+  <level>INFO</level>
+  <class>jmetal.metaheuristics.fdea.FDEA_main_3obj_modificado</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Total execution time: 321290ms</message>
+</record>
 </log>

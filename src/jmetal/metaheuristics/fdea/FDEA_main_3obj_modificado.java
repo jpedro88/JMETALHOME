@@ -324,7 +324,7 @@ public class FDEA_main_3obj_modificado{
 			sumHV+=HVarray[i];
 		}
 		logger_.info("Total execution time: " + Execution_time + "ms");
-		System.out.println("avrIGD-fun= "+sumIGD/runtimes);
+//		System.out.println("avrIGD-fun= "+sumIGD/runtimes);
 		System.out.println("avrHV-fun= "+sumHV/runtimes);
 
 	}//main
