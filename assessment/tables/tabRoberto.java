@@ -1,3 +1,4 @@
+
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +23,7 @@ In the lower part there is the names of the algorithms and a sum of how many tim
 public class tabRoberto{
 	public static void println(String x){System.out.println(x);}
 	public static void println(){System.out.println();}
-	static String caminho="../../results/up_to_20/";
+	static String caminho="../../src/results/";
 	//static String caminho="../../../results_primeira-parte/";
 	static int[] entreOsMelhores;
 	static int[] melhorQueOutros;
@@ -33,15 +34,15 @@ public class tabRoberto{
 
 	public static void main(String[] args) throws IOException{
 		//String objectives[]={"2","3","5","10","15","20"};
-		String objectives[]={"3","5","8","10", "15", "20"};
+		String objectives[]={"3","5","8","10",};
 // 		String objectives[]={"3","5","8"};
 // 		String metrics[] = {"$GD_p$", "$IGD_p$", "$R_2$","Hypervolume"};
-		String metrics[]={"$IGD_p$","Hypervolume"};
+		String metrics[]={"$IGD_p$"};
 // 		String metrics[]={"Hypervolume"};
 		//String[] problems={"dtlz1", "dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7", "wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
 // 		String[] problems={"dtlz1", "dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7"};
- 		String[] problems={"wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
-		//String[] problems={"wfg1", "wfg2"};
+ 		//String[] problems={"wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
+		String[] problems={"wfg1"};
 		
 		for(int m=0;m<metrics.length;m++){
 			String metric=metrics[m];
@@ -191,7 +192,7 @@ public class tabRoberto{
 		if(metric.toUpperCase().equals("$GD_P$"))
 			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-gdp.txt" ) );
 		if(metric.toUpperCase().equals("$IGD_P$"))
-			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-igdp.txt" ) );
+			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-igd.txt" ) );
 		if(metric.toUpperCase().equals("$R_2$"))
 			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-r2.txt" ) );
 		if(metric.toUpperCase().equals("HYPERVOLUME")){

@@ -17,6 +17,7 @@ public class gdp {
 	public static void main(String[] args) throws IOException{
 		int numExec=30;
 		int objectiveNumber=-1;
+//		int objectiveNumber=1;
 		if(args.length == 0){
 			System.err.println("uso: gdp front1 ... frontN");
 			System.exit(1);
@@ -38,6 +39,7 @@ public class gdp {
 					objs = linha.split("\t");//tenta separar por tab
 				if ((objs.length != 1 || !(objs[0].equals(""))) && !objs[0].equals("#") ) { //se tiver um caractere, nao vazio e diferente de #
 					objectiveNumber=objs.length;
+					System.out.println(objectiveNumber);
 					double[] d = new double[objectiveNumber];
 					for (int i = 0; i < objectiveNumber; i++) {
 						d[i] = Double.parseDouble(objs[i].replace(",",".")); // converte a linha para numeros tanto com ponto como com virgula de separador
@@ -88,7 +90,8 @@ public class gdp {
 			}
 		}
 		//le o front real e atualiza os maiores e menores valores (pra incluir 0 como origem na maioria)
-		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("assessment/metrics/pareto/"+problem.toUpperCase()+"_"+objectiveNumber));
+		objectiveNumber++;
+		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("../assessment/metrics/pareto/"+problem.toUpperCase()+"_"+objectiveNumber));
 		for(int s=0;s<frontReal.size();s++){//solucoes dentro do front real
 			double[] solTemp=frontReal.get(s);
 			for(int o=0;o<objectiveNumber;o++){ //objetivos da solucao

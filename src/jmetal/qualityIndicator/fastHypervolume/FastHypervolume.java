@@ -110,9 +110,10 @@ public class FastHypervolume {
 					maxObjectives[j] = solutionSet.get(i).getObjective(j);
 
 		for (int i = 0; i < referencePoint_.numberOfObjectives(); i++) {
-			//referencePoint_.setObjective(i, maxObjectives[i] + offset_);
+//			referencePoint_.setObjective(i, maxObjectives[i] + offset_);
+			referencePoint_.setObjective(i, maxObjectives[i] + 0.01);
 			//referencePoint_.setObjective(i, 2*i+10);
-			referencePoint_.setObjective(i, 22);
+//			referencePoint_.setObjective(i, 22);
 		}
 	}
 
@@ -151,7 +152,6 @@ public class FastHypervolume {
 	public void computeHVContributions(SolutionSet solutionSet) {
 		double[] contributions = new double[solutionSet.size()];
 		double solutionSetHV = 0;
-
 		solutionSetHV = computeHypervolume(solutionSet);
 
 		for (int i = 0; i < solutionSet.size(); i++) {
@@ -163,6 +163,13 @@ public class FastHypervolume {
 				// solutionSet.sort(new
 				// ObjectiveComparator(numberOfObjectives_-1, true));
 				contributions[i] = solutionSetHV - get2DHV(solutionSet);
+				if(contributions[i] < 0) {
+					System.out.print("Contribuition: " + solutionSetHV +" "+get2DHV(solutionSet));
+					System.out.print(" Reference Point: " + referencePoint_.getObjective(0) + " " + referencePoint_.getObjective(1));
+					System.out.print(" Negative contribution: " + contributions[i]);
+					System.out.println(" Solution: " + currentPoint.getObjective(0) + " " + currentPoint.getObjective(1));
+				}
+
 			} else {
 				Front1 front = new Front1(solutionSet.size(),
 						numberOfObjectives_, solutionSet);

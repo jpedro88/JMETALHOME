@@ -10,13 +10,13 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Scanner;
-import java.io.FileWriter; 
+import java.io.FileWriter;
 import java.io.File;
 
 public class kruskal_rank_full{
 	public static void println(String x){System.out.println(x);}
 	public static void println(){System.out.println();}
-	static String caminho="../../../results/up_to_20/";
+	static String caminho="../../../src/results/";
 	//static String caminho="../../../results_primeira-parte/";
 	static String table[][];
 	static double[][] matrizGeral;
@@ -24,27 +24,27 @@ public class kruskal_rank_full{
 
 	public static void main(String[] args) throws IOException{
 		//String objectives[]={"2","3","5","10","15","20"};
-		String objectives[]={"3","5","8","10", "15", "20"};
+		String objectives[]={"2","3","5","8","10"};
 // 		String objectives[]={"3","5","8"};
-		String metrics[] = {"$GD_p$", "$IGD_p$", "$R_2$", "Hypervolume"};
-// 		String metrics[] = {"$IGD_p$"};
-// 		String metrics[]={"Hypervolume"};
+		//String metrics[] = {"$GD_p$", "$IGD_p$", "$R_2$", "Hypervolume"};
+		String metrics[] = {"$IGD_p$"};
+ 		//String metrics[]={"Hypervolume"};
 		//String[] problems={"dtlz1", "dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7", "wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
-// 		String[] problems={"dtlz1", "dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7"};
- 		String[] problems={"wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
-// 		String[] problems={"dtlz2"};
+ 		//String[] problems={"dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7"};
+ 		//String[] problems={"wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
+ 		String[] problems={"dtlz1"};
 
 		String[] titles=readTitles();
-		
+
 		for(int m=0;m<metrics.length;m++){
 			String metric=metrics[m];
-		
+
 			table = new String[1+(titles.length*objectives.length)][2+problems.length];
 			matrizGeral = new double[problems.length*objectives.length][titles.length];
 			for(int i=0;i<table.length;i++) //inicializa a tabela
 				for(int j=0;j<table[i].length;j++)
 					table[i][j]="";
-			
+
 			//montando as colunas laterais da tabela
 			table[0][0]="Obj.";
 			table[0][1]="Algorithms";
@@ -63,7 +63,7 @@ public class kruskal_rank_full{
 			}
 			saida = saida.substring(0, saida.length()-1);
 			saida+="}\n\\hline";
-			
+
 			//obtendo os valores do centro da tabela
 			for(int j=2;j<table[0].length;j++){
 				String[][] matriz=readData(titles.length, objectives.length, problems[(j-2)], metric, j-2);
@@ -85,7 +85,7 @@ public class kruskal_rank_full{
 	// 		for(int i=0;i<ranksFinais.length;i++){
 	// 				System.out.print(avgRanks[i]+"("+ranksFinais[i]+") ");
 	// 		}
-			
+
 			System.out.println("(crit. Diff: "+criticalDifference+")");
 			//montando o final da tabela
 			println("\n"+saida);
@@ -109,7 +109,7 @@ public class kruskal_rank_full{
 			println("\\end{tabular}\n\\label{results}\n\\end{table*}");
 		}//end metrics loop
 	}
-	
+
 	public static String[] readTitles()throws IOException{
 		Scanner scanner = new Scanner( new FileInputStream( caminho+"titles.txt" ) );
 		String value = scanner.nextLine().trim();
@@ -132,7 +132,7 @@ public class kruskal_rank_full{
 		if(metric.toUpperCase().equals("$GD_P$"))
 			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-gdp.txt" ) );
 		if(metric.toUpperCase().equals("$IGD_P$"))
-			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-igdp.txt" ) );
+			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-igd.txt" ) );
 		if(metric.toUpperCase().equals("$R_2$"))
 			scanner = new Scanner( new FileInputStream( caminho+"/all-"+problem+"-r2.txt" ) );
 		if(metric.toUpperCase().equals("HYPERVOLUME")){
@@ -155,7 +155,7 @@ public class kruskal_rank_full{
 		if(dados.size() > 0){
 			retorno[i]=operacoes(dados,i);
 		}
-		
+
 		System.out.printf(" ");
 		return retorno;
 	}
@@ -169,7 +169,7 @@ public class kruskal_rank_full{
 		ArrayList<Double> lista = new ArrayList<Double>();
 		int indMenor=-1;
 		double menorValor=Double.MAX_VALUE;
-		int contRank=1;		
+		int contRank=1;
 		//ranqueia considerando todas as 30 instancias (N=300)
 		while(true){
 			for(int i=0;i<tamTotal;i++){
@@ -194,7 +194,7 @@ public class kruskal_rank_full{
 			rankAtual/=(double)valores.size();
 			for(int j=0;j<valores.size();j++){
 				ranks[valores.get(j)/colunas][valores.get(j)%colunas]=rankAtual;
-			}				
+			}
 		}
 
  		matriz=execute_ksk(dados);
@@ -211,22 +211,22 @@ public class kruskal_rank_full{
 			//System.out.print(format(avgRanks[i])+"\t");
 		}
 		matrizGeral[index]=avgRanks;
-		
+
 		double[] ranksFinais=rankStatistics(avgRanks, matriz);
-		
+
 		menorValor=Double.MAX_VALUE;
 		for(int j=0;j<colunas;j++)
 			if(ranksFinais[j] < menorValor)
 				menorValor=ranksFinais[j];
- 		
+
 		for(int j=0;j<colunas;j++){
 			if(ranksFinais[j] == menorValor)
 				saida[j]="\\cellcolor{gray!30}\\textbf{"+format(avgRanks[j])+" ("+format(ranksFinais[j])+")"+"}";
 			else
 				saida[j]=format(avgRanks[j])+" ("+format(ranksFinais[j])+")";
-		}		
+		}
  		return saida;
-	
+
 	}
 	static double[] rankStatistics(double[] avgRanks, boolean[][] matriz){
 		//ranqueia a media dos ranks
@@ -311,7 +311,7 @@ public class kruskal_rank_full{
 		}
 		return retorno;
 	}
-	
+
 	static double[] calcularMedias(ArrayList<double[]> dados){
 		double[] medias = new double[dados.get(0).length];
 		Arrays.fill(medias,0);
@@ -353,24 +353,24 @@ public class kruskal_rank_full{
 					int c=Integer.parseInt(line.split("\\s+")[0].split("-")[1])-1;
 					marcar[c][l]=Boolean.parseBoolean(ln[ln.length-1]);
 					marcar[l][c]=Boolean.parseBoolean(ln[ln.length-1]);
-					
+
 // 					System.out.println(ln[ln.length-1]+"--"+marcar[c][l]+"("+(l+1)+","+(c+1)+")");
-					
-					
+
+
 					criticalDifference=Double.parseDouble(line.split("\\s+")[2]);
 				}
 			}
-			
+
 // 			for(int i=0;i<marcar.length;i++){
 // 				for(int j=0;j<marcar.length;j++)
 // 					System.out.print(marcar[i][j]+"\t");
 // 				System.out.println();
 // 			}
 // 			System.out.println();
-			
+
 			File file = new File("temp.txt");
-			if(!file.delete())
-				System.out.println("Temp file delete operation failed.");
+//			if(!file.delete())
+//				System.out.println("Temp file delete operation failed.");
 		}catch (Exception e){	e.printStackTrace();}
 		return marcar;
 	}
@@ -400,7 +400,7 @@ public class kruskal_rank_full{
 					marcar[l][c]=Boolean.parseBoolean(ln[ln.length-1]);
 				}
 			}
-			
+
 			File file = new File("temp.txt");
 			if(!file.delete())
 				System.out.println("Temp file delete operation failed.");

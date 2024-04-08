@@ -17,76 +17,84 @@ import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.ranking.NondominatedRanking;
 import jmetal.util.ranking.Ranking;
+import jmetal.util.Distance;
+import jmetal.qualityIndicator.fastHypervolume.FastHypervolume;
+import jmetal.qualityIndicator.fastHypervolume.wfg.Front1;
+import jmetal.qualityIndicator.fastHypervolume.wfg.WFGHV1;
+
+import jmetal.util.comparators.ObjectiveComparator;
 
 public class FDEA2 extends Algorithm{
 	private int populationSize_;
-	
+
 	private SolutionSet population_;
 	SolutionSet offspringPopulation_;
 	SolutionSet union_;
-	
+
+	FastHypervolume fastHypervolume = new FastHypervolume();
+
 	int generations_;
 
 	Operator crossover_;
 	Operator mutation_;
 	Operator selection_;
-	
+
 	private double[] zideal_; //ideal point
 	private double[] znadir_;//Nadir point
 	double[][] extremePoints_; // extreme points
-	
+
 	int T_;
 	int[][] neighborhood_;
-	
+
 	double[] pValue;
 	double[][] w;
 	int t=0;
-	
+
 	public FDEA2(Problem problem) {
 		super(problem);
 	} // CAEA_Min_Ideal
-    
+
 	public static void printGD(String path,double[] GD){
-	    try {
-	      /* Open the file */
-	      FileOutputStream fos   = new FileOutputStream(path)     ;//javaÎÄ¼þÊä³öÁ÷£¬´´½¨ÎÄ¼þÁ÷
-	      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;//OutputStreamWriterÊÇ×Ö·ûÁ÷Í¨Ïò×Ö½ÚÁ÷µÄÇÅÁº 
-	      BufferedWriter bw      = new BufferedWriter(osw)        ;//»º³åÇø               
-	      for (int i = 0; i < GD.length; i++) {  
-	        bw.write(GD[i]+" ");//Ð´µ½»º³åÇø
-	        bw.newLine(); //»»ÐÐ       
-	      }
-	      
-	      /* Close the file */
-	      bw.close();
-	    }catch (IOException e) {
-	      Configuration.logger_.severe("Error acceding to the file");
-	      e.printStackTrace();
-	    }       
-	  } // printGD
-	
+		try {
+			/* Open the file */
+			FileOutputStream fos   = new FileOutputStream(path)     ;//javaï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
+			OutputStreamWriter osw = new OutputStreamWriter(fos)    ;//OutputStreamWriterï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			BufferedWriter bw      = new BufferedWriter(osw)        ;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			for (int i = 0; i < GD.length; i++) {
+				bw.write(GD[i]+" ");//Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				bw.newLine(); //ï¿½ï¿½ï¿½ï¿½
+			}
+
+			/* Close the file */
+			bw.close();
+		}catch (IOException e) {
+			Configuration.logger_.severe("Error acceding to the file");
+			e.printStackTrace();
+		}
+	} // printGD
+
 	public static void printGD(String path,double[][] GD){
-	    try {
-	      /* Open the file */
-	      FileOutputStream fos   = new FileOutputStream(path)     ;//javaÎÄ¼þÊä³öÁ÷£¬´´½¨ÎÄ¼þÁ÷
-	      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;//OutputStreamWriterÊÇ×Ö·ûÁ÷Í¨Ïò×Ö½ÚÁ÷µÄÇÅÁº 
-	      BufferedWriter bw      = new BufferedWriter(osw)        ;//»º³åÇø               
-	      for (int i = 0; i < GD.length; i++) {
-	    	  for(int j=0;j<GD[i].length;j++){
-	    		  bw.write(GD[i][j]+" ");//Ð´µ½»º³åÇø
-	    	  }
-	          bw.newLine(); //»»ÐÐ       
-	      }
-	      
-	      /* Close the file */
-	      bw.close();
-	    }catch (IOException e) {
-	      Configuration.logger_.severe("Error acceding to the file");
-	      e.printStackTrace();
-	    }       
-	  } // printGD
-	
-	
+		try {
+			/* Open the file */
+			FileOutputStream fos   = new FileOutputStream(path)     ;//javaï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
+			OutputStreamWriter osw = new OutputStreamWriter(fos)    ;//OutputStreamWriterï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			BufferedWriter bw      = new BufferedWriter(osw)        ;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			for (int i = 0; i < GD.length; i++) {
+				for(int j=0;j<GD[i].length;j++){
+					bw.write(GD[i][j]+" ");//Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				}
+				bw.newLine(); //ï¿½ï¿½ï¿½ï¿½
+			}
+
+			/* Close the file */
+			bw.close();
+		}catch (IOException e) {
+			Configuration.logger_.severe("Error acceding to the file");
+			e.printStackTrace();
+		}
+	} // printGD
+
+
 	@Override
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
 		int maxGenerations_;
@@ -99,10 +107,10 @@ public class FDEA2 extends Algorithm{
 		mutation_ = operators_.get("mutation");
 		crossover_ = operators_.get("crossover");
 		selection_ = operators_.get("selection");
-		
+
 		T_ = ((Integer) this.getInputParameter("T")).intValue();
 		neighborhood_ = new int[populationSize_][T_];
-		
+
 		int interv;
 		if(problem_.getNumberOfObjectives() == 2){
 			interv = 12;
@@ -121,17 +129,18 @@ public class FDEA2 extends Algorithm{
 		}
 		pValue = new double[maxGenerations_/interv];
 		w = new double[maxGenerations_/interv][problem_.getNumberOfObjectives()];
-		
+
 		initPopulation();// initialize the population;
-		
+
 		initIdealPoint();  // initialize the ideal point
-		
+
 		initNadirPoint();    // initialize the nadir point
-		
+
 		initExtremePoints(); // initialize the extreme points
 		int nn = 0;
+		/*laÃ§o principal*/
 		while (generations_ < maxGenerations_) {
-			
+
 			if(generations_ < maxGenerations_){
 				reproduction(generations_, maxGenerations_);
 			}else{
@@ -143,51 +152,53 @@ public class FDEA2 extends Algorithm{
 			double p = 1.0;
 			SolutionSet[] subPopulation = null;
 			//Autodecomposition
-				//estimateIdealPoint(st[0]);
-			    updateIdealPoint(st[0]);
-			    if(st[0].size() < 4){
-			    	updateNadirPoint(st[1]);
-			    }else{
-			    	updateNadirPoint(st[0]);
-			    }
-				
-				//estimateNadirPoint(st[1]);
-				
-				normalizationObjective(st[1]);
-				
+			//estimateIdealPoint(st[0]);
+			updateIdealPoint(st[0]);
+			if(st[0].size() < problem_.getNumberOfObjectives()){
+				updateNadirPoint(st[1]);
+			}else{
+				updateNadirPoint(st[0]);
+			}
+
+			//estimateNadirPoint(st[1]);
+
+			normalizationObjective(st[1]);
+
 				/*if((generations_)/100 == 0){
 					p = estimation_Curvature(st[0]);
 				}*/
-				if(generations_ > 0.2*maxGenerations_){
-					p = estimation_Curvature(st[0]);
-				}
-				
+			if(generations_ > 0.0*maxGenerations_){
+				p = estimation_Curvature(st[0]);
+			}
+
 
 				/*if(generations_%interv == 0){
-				  pValue[nn] = p; 
+				  pValue[nn] = p;
 				  System.out.println("The current curvature is p = "+p);
 				  nn++;
 			    }*/
-				if(st[1].size() == populationSize_){
-					population_ = st[1];
-				}else{
-					mapping(st[1],p);
-				    subPopulation = new MostSimilarBasedSampling(st[1], problem_.getNumberOfObjectives())
-							.getIdealPointOrientedPopulation(populationSize_);
-				    //Elites Selection to preserve convergence
-				    getNextPopulation(subPopulation,generations_,maxGenerations_, interv);
-				}
-				
+			if(st[1].size() == populationSize_){
+				//System.out.println("IF:"+st[1].size());
+				population_ = st[1];
+			}else{
+				mapping(st[1],p);
+				//System.out.println("ELSE:"+p);
+				subPopulation = new MostSimilarBasedSampling(st[1], problem_.getNumberOfObjectives())
+						.getIdealPointOrientedPopulation(populationSize_);
+				//Elites Selection to preserve convergence
+				getNextPopulation(subPopulation,generations_,maxGenerations_, interv);
+			}
+
 			generations_++;
 		}//while
 		//printGD("FDEA_"+problem_.getNumberOfObjectives()+"Obj_"+problem_.getName()+"_Pvalue.txt",pValue);
 		//printGD("FDEA_"+problem_.getNumberOfObjectives()+"Obj_"+problem_.getName()+"_Wvalue.txt",w);
-		
+
 		Ranking nodominatedRanking = new NondominatedRanking(population_);
 		return nodominatedRanking.getSubfront(0);
 		//return population_;
 	}//execute
-	
+
 	public void initPopulation() throws JMException, ClassNotFoundException {
 
 		population_ = new SolutionSet(populationSize_);
@@ -201,10 +212,24 @@ public class FDEA2 extends Algorithm{
 			population_.add(newSolution);
 		} // for
 	} // initPopulation
-	
+
 	public void reproduction(int G, int Gmax) throws JMException{
 		offspringPopulation_ = new SolutionSet(populationSize_);
 		Solution[] parents = new Solution[2];
+
+		/** calculo crowd distance e HV*/
+
+		fastHypervolume.computeHVContributions(population_);
+
+//		for (int i = 0; i < (populationSize_); i++) {
+//
+//			for (int j = 0; j < population_.get(0).numberOfObjectives(); j++) {
+//				System.out.print(population_.get(i).getObjective(j)+" ");
+//			}
+//			System.out.println(population_.get(i).getCrowdingDistance());
+//		}
+
+		//chamada do mÃ©todo
 		for (int i = 0; i < (populationSize_); i++) {
 			if (G < Gmax) {
 				// obtain parents
@@ -219,11 +244,11 @@ public class FDEA2 extends Algorithm{
 			} // if
 		} // for
 	}
-	
+
 	public void reproduction_Neighbor() throws JMException{
-		
+
 		getNeighborhood_Population();
-		
+
 		offspringPopulation_ = new SolutionSet(populationSize_);
 		Solution[] parents = new Solution[2];
 		for (int i = 0; i < (populationSize_); i++) {
@@ -254,11 +279,11 @@ public class FDEA2 extends Algorithm{
 			offspringPopulation_.add(offSpring[0]);
 		} // for
 	}
-	
+
 	public void getNeighborhood_Population(){
 		double[] x = new double[populationSize_];
 		int[] idx = new int[populationSize_];
-		
+
 		for(int i=0;i<populationSize_;i++){
 			for(int j=0;j<populationSize_;j++){
 				x[j]=computeAngle(population_.get(i),population_.get(j));
@@ -268,8 +293,8 @@ public class FDEA2 extends Algorithm{
 			System.arraycopy(idx,0,neighborhood_[i],0,T_);
 		}
 	}
-	
-    public SolutionSet[] getStSolutionSet(SolutionSet ss,int size) {
+
+	public SolutionSet[] getStSolutionSet(SolutionSet ss,int size) {
 		SolutionSet[] sets = new SolutionSet[2];
 		Ranking ranking = new NondominatedRanking(ss);
 
@@ -304,9 +329,9 @@ public class FDEA2 extends Algorithm{
 
 		return sets;
 	}
-    
-    /*
-	 * Estimate the Ideal Point 
+
+	/*
+	 * Estimate the Ideal Point
 	 */
 	public void estimateIdealPoint(SolutionSet solutionSet){
 		for(int i=0; i<problem_.getNumberOfObjectives();i++){
@@ -318,12 +343,12 @@ public class FDEA2 extends Algorithm{
 			}//for
 		}//for
 	}
-	
+
 	/*
-	 * Estimate the Nadir Point 
+	 * Estimate the Nadir Point
 	 */
-    public void estimateNadirPoint(SolutionSet solutionSet){
-    	for(int i=0; i<problem_.getNumberOfObjectives();i++){
+	public void estimateNadirPoint(SolutionSet solutionSet){
+		for(int i=0; i<problem_.getNumberOfObjectives();i++){
 			znadir_[i] = -1.0e+30;
 			for(int j=0; j<solutionSet.size();j++){
 				if(solutionSet.get(j).getObjective(i) > znadir_[i]){
@@ -332,13 +357,13 @@ public class FDEA2 extends Algorithm{
 			}//for
 		}//for
 	}
-	
-    void copyObjectiveValues(double[] array, Solution individual) {
+
+	void copyObjectiveValues(double[] array, Solution individual) {
 		for (int i = 0; i < individual.numberOfObjectives(); i++) {
 			array[i] = individual.getObjective(i);
 		}
 	}
-	
+
 
 	double asfFunction(Solution sol, int j) {
 		double max = Double.MIN_VALUE;
@@ -371,7 +396,7 @@ public class FDEA2 extends Algorithm{
 
 			double val = Math.abs((ref[i] - zideal_[i])
 					/ (znadir_[i] - zideal_[i]));
-			
+
 
 			if (j != i)
 				val = val / epsilon;
@@ -382,9 +407,9 @@ public class FDEA2 extends Algorithm{
 
 		return max;
 	}
-	
-	
-	
+
+
+
 	void initIdealPoint() {
 		int obj = problem_.getNumberOfObjectives();
 		zideal_ = new double[obj];
@@ -397,8 +422,8 @@ public class FDEA2 extends Algorithm{
 			}
 		}
 	}
-	
-	
+
+
 	void updateIdealPoint(SolutionSet pop){
 		for (int j = 0; j < problem_.getNumberOfObjectives(); j++) {
 			for (int i = 0; i < pop.size(); i++) {
@@ -407,7 +432,7 @@ public class FDEA2 extends Algorithm{
 			}
 		}
 	}
-	
+
 	void initNadirPoint() {
 		int obj = problem_.getNumberOfObjectives();
 		znadir_ = new double[obj];
@@ -420,8 +445,8 @@ public class FDEA2 extends Algorithm{
 			}
 		}
 	}
-	
-	
+
+
 	public void initExtremePoints() {
 		int obj = problem_.getNumberOfObjectives();
 		extremePoints_ = new double[obj][obj];
@@ -430,15 +455,15 @@ public class FDEA2 extends Algorithm{
 				extremePoints_[i][j] = 1.0e+30;
 			}
 		}
-		
+
 	}
 
-	
+
 	void updateNadirPoint(SolutionSet pop){
-		
+
 		updateExtremePoints(pop);
 
-		
+
 		int obj = problem_.getNumberOfObjectives();
 		double[][] temp = new double[obj][obj];
 
@@ -452,7 +477,7 @@ public class FDEA2 extends Algorithm{
 		Matrix EX = new Matrix(temp);
 
 		boolean sucess = true;
-		
+
 		if (EX.rank() == EX.getRowDimension()) {
 			double[] u = new double[obj];
 			for (int j = 0; j < obj; j++)
@@ -466,7 +491,7 @@ public class FDEA2 extends Algorithm{
 			for (j = 0; j < obj; j++) {
 
 				double aj = 1.0 / AL.get(j, 0) + zideal_[j];
-		
+
 
 				if ((aj > zideal_[j]) && (!Double.isInfinite(aj)) && (!Double.isNaN(aj)))
 					znadir_[j] = aj;
@@ -475,11 +500,10 @@ public class FDEA2 extends Algorithm{
 					break;
 				}
 			}
-		} 
-		else 
+		}
+		else
 			sucess = false;
-		
-		
+
 		if (!sucess){
 			double zmax[] = computeMaxPoint(pop);
 			for (int j = 0; j < obj; j++) {
@@ -487,29 +511,29 @@ public class FDEA2 extends Algorithm{
 			}
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	public void updateExtremePoints(SolutionSet pop){
 		for (int i = 0; i < pop.size(); i++)
 			updateExtremePoints(pop.get(i));
 	}
-	
-	
+
+
 	public void updateExtremePoints(Solution individual){
 		int obj = problem_.getNumberOfObjectives();
 		for (int i = 0; i < obj; i++){
 			double asf1 = asfFunction(individual, i);
 			double asf2 = asfFunction(extremePoints_[i], i);
-			
+
 			if (asf1 < asf2){
 				copyObjectiveValues(extremePoints_[i], individual);
 			}
 		}
 	}
-	
-	
+
+
 	double[] computeMaxPoint(SolutionSet pop){
 		int obj = problem_.getNumberOfObjectives();
 		double zmax[] = new double[obj];
@@ -523,10 +547,10 @@ public class FDEA2 extends Algorithm{
 		}
 		return zmax;
 	}
-	
-    /*
-     * Normalization
-     */
+
+	/*
+	 * Normalization
+	 */
 	public void normalizationObjective(SolutionSet solutionSet){
 		for(int i=0; i<solutionSet.size(); i++){
 			Solution sol = solutionSet.get(i);
@@ -537,8 +561,8 @@ public class FDEA2 extends Algorithm{
 			}//for
 		}//for
 	}
-	
-    public double computeAngle(Solution so1, Solution so2){
+
+	public double computeAngle(Solution so1, Solution so2){
 		double angle = 0.0;
 		double distanceToidealPoint1 = so1.getDistanceToIdealPoint();
 		double distanceToidealPoint2 = so2.getDistanceToIdealPoint();
@@ -556,8 +580,8 @@ public class FDEA2 extends Algorithm{
 		angle = Math.acos(value);
 		return angle;
 	}
-    
-    public double computeDistance(Solution so1, Solution so2){
+
+	public double computeDistance(Solution so1, Solution so2){
 		double dis = 0.0;
 		double innerProduc = 0.0;
 		int objNumber_ = problem_.getNumberOfObjectives();
@@ -567,27 +591,27 @@ public class FDEA2 extends Algorithm{
 		dis = Math.sqrt(innerProduc);
 		return dis;
 	}
-    
-    public void getNextPopulation(SolutionSet[] subPopulation, int gen, int maxGen, int interv){
-    	int objNumber = problem_.getNumberOfObjectives();
-    	SolutionSet[] ReferenceSet = new LeastSimilarBasedSampling(subPopulation[0],objNumber)
-    			.getIdealPointOrientedPopulation(objNumber);
-    	subPopulation[0].clear();
-    	
-    	SolutionSet subSets[] = new SolutionSet[populationSize_];
-    	
-    	for(int i=0;i<objNumber;i++){
-    		subSets[i] = new SolutionSet();
-    		subSets[i].add(ReferenceSet[0].get(i));
-    		subPopulation[0].add(ReferenceSet[0].get(i));
-    	}
-    	
-		for(int i=0; i<populationSize_-objNumber;i++){
-			  subSets[i+objNumber] = new SolutionSet();
-			  subSets[i+objNumber].add(ReferenceSet[1].get(i));
-			  subPopulation[0].add(ReferenceSet[1].get(i));
+
+	public void getNextPopulation(SolutionSet[] subPopulation, int gen, int maxGen, int interv){
+		int objNumber = problem_.getNumberOfObjectives();
+		SolutionSet[] ReferenceSet = new LeastSimilarBasedSampling(subPopulation[0],objNumber)
+				.getIdealPointOrientedPopulation(objNumber);
+		subPopulation[0].clear();
+
+		SolutionSet subSets[] = new SolutionSet[populationSize_];
+
+		for(int i=0;i<objNumber;i++){
+			subSets[i] = new SolutionSet();
+			subSets[i].add(ReferenceSet[0].get(i));
+			subPopulation[0].add(ReferenceSet[0].get(i));
 		}
-		
+
+		for(int i=0; i<populationSize_-objNumber;i++){
+			subSets[i+objNumber] = new SolutionSet();
+			subSets[i+objNumber].add(ReferenceSet[1].get(i));
+			subPopulation[0].add(ReferenceSet[1].get(i));
+		}
+
 		for(int i=0; i<subPopulation[1].size();i++){
 			Solution s1 = subPopulation[1].get(i);
 			double minAngle = computeDistance(s1,subPopulation[0].get(0));
@@ -596,13 +620,13 @@ public class FDEA2 extends Algorithm{
 				Solution s2 = subPopulation[0].get(j);
 				double angle = computeDistance(s1,s2);
 				if(angle<minAngle){
-				   minAngle = angle;
-				   minIndex = j;
+					minAngle = angle;
+					minIndex = j;
 				}
 			}
 			subSets[minIndex].add(s1);
 		}
-		
+
 		double[][] centers = new double[populationSize_][problem_.getNumberOfObjectives()];
 		for(int i=0;i<populationSize_;i++){
 			for(int m=0;m<problem_.getNumberOfObjectives();m++){
@@ -613,20 +637,20 @@ public class FDEA2 extends Algorithm{
 				centers[i][m] = summ/subSets[i].size();
 			}
 		}
-		
+
 		double[] re = new double[problem_.getNumberOfObjectives()];
 		for(int i=0;i<problem_.getNumberOfObjectives(); i++){
-    		double sum=0;
-    		for(int j=0;j<populationSize_; j++){
-    			sum += centers[j][i];
-    			//sum += subPopulation[0].get(j).getIthTranslatedObjective(i);
-    			//sum += subPopulation[0].get(j).getNormalizedObjective(i);
-    		}
-    		sum = sum/(populationSize_);
-    		re[i] = sum;
-    		//System.out.print(re[i]+" ");
-    		re[i] = 1.0;
-    	}
+			double sum=0;
+			for(int j=0;j<populationSize_; j++){
+				sum += centers[j][i];
+				//sum += subPopulation[0].get(j).getIthTranslatedObjective(i);
+				//sum += subPopulation[0].get(j).getNormalizedObjective(i);
+			}
+			sum = sum/(populationSize_);
+			re[i] = sum;
+			//System.out.print(re[i]+" ");
+			//re[i] = 1.0;
+		}
 		/*if(gen%interv == 0){
 			w[t] = re;
 			t++;
@@ -636,245 +660,245 @@ public class FDEA2 extends Algorithm{
 			if(gen > 0.0*maxGen){
 				population_.add(subSets[i].get(0));
 			}else{
-				double minValue; 
+				double minValue;
 				//minValue = subSets[i].get(0).getDistanceToIdealPoint();
 				//minValue = subSets[i].get(0).getSumValue();
 				minValue = computeWS(subSets[i].get(0), re);
 				int minIndex = 0;
 				for(int j=1; j<subSets[i].size();j++){
-				   double value; 
-				   //value = subSets[i].get(j).getDistanceToIdealPoint();
-				   //value = subSets[i].get(j).getSumValue();
-				   value = computeWS(subSets[i].get(j), re);
-				   if(value < minValue){
-					  minValue = value;
-					  minIndex = j;
-				   }
+					double value;
+					//value = subSets[i].get(j).getDistanceToIdealPoint();
+					//value = subSets[i].get(j).getSumValue();
+					value = computeWS(subSets[i].get(j), re);
+					if(value < minValue){
+						minValue = value;
+						minIndex = j;
+					}
 				}
 				population_.add(subSets[i].get(minIndex));
 			}
 		}
-		
+
 		for(int i=objNumber; i<populationSize_;i++){
-		    double minValue; 
+			double minValue;
 			//minValue = subSets[i].get(0).getDistanceToIdealPoint();
-		    //minValue = subSets[i].get(0).getSumValue();
+			//minValue = subSets[i].get(0).getSumValue();
 			minValue = computeWS(subSets[i].get(0), re);
 			int minIndex = 0;
 			for(int j=1; j<subSets[i].size();j++){
-			   double value; 
-			   //value = subSets[i].get(j).getDistanceToIdealPoint();
-			   //value = subSets[i].get(j).getSumValue();
-			   value = computeWS(subSets[i].get(j), re);
-			   if(value < minValue){
-				  minValue = value;
-				  minIndex = j;
-			   }
+				double value;
+				//value = subSets[i].get(j).getDistanceToIdealPoint();
+				//value = subSets[i].get(j).getSumValue();
+				value = computeWS(subSets[i].get(j), re);
+				if(value < minValue){
+					minValue = value;
+					minIndex = j;
+				}
 			}
 			population_.add(subSets[i].get(minIndex));
 		}
-    }
-    
-    public double computeWS(Solution so1, double[] re){
-    	double value = 0.0;
-    	double sum = 0.0;
-    	for(int i=0; i<problem_.getNumberOfObjectives(); i++){
-    		sum += re[i];
-    	}
-    	if(sum == 0){
-    		sum = 0.000001;
-    	}
-    	for(int i=0; i<problem_.getNumberOfObjectives(); i++){
-    		re[i] = re[i]/sum;
-    		value += so1.getNormalizedObjective(i)*re[i];
-    	}
-    	return value;
-    }
-    
-    public double computeLWS(Solution s, Solution r){
-    	double value=0;
-    	for(int i=0;i<problem_.getNumberOfObjectives();i++){
-    		value+=s.getNormalizedObjective(i)*r.getNormalizedObjective(i);
-    	}
-    	return value;
-    }
-    
-    public double estimation_Curvature(SolutionSet solutionSet){
-    	SolutionSet solSet = solutionSet;
-    	double c = 1.0;
-    	int size = solSet.size();
-    	int numb = problem_.getNumberOfObjectives();
-    	
-    	double sum = 0.0;
-    	double mean = 0.0;
-    	double var = 0.0;
-    	
-    	SolutionSet sSet = new SolutionSet();
-    	for(int i=0;i<size;i++){
-    		Solution sol = solSet.get(i);
-    		sSet.add(sol);
-    	}
-    	
-    	for(int i=0;i<sSet.size();i++){
-    		Solution sol = sSet.get(i);
-    		for(int j=0; j<numb; j++){
-    			if(sol.getNormalizedObjective(j) > 1.0){
-    				sSet.remove(i);
-    				i--;
-    				break;
-    			}
-    		}
-    	}
-    	solSet = sSet;
-    	size = sSet.size();
-    	
-    	double[] dis = new double[size];
-    	for(int i=0;i<size;i++){
-    		Solution sol = solSet.get(i);
-    		dis[i] = 0.0;
-    		for(int j=0; j<numb; j++){
-    			dis[i] += sol.getNormalizedObjective(j);
-    		}
-    		dis[i] = dis[i] - 1.0;
-    		dis[i] = dis[i]/Math.sqrt(numb);
-    		sum += dis[i];
-    	}
-    	
-    	mean = sum/size;
-    	
-    	sum = 0.0;
-    	for(int i=0;i<size;i++){
-    		sum += Math.pow(dis[i]-mean, 2);
-    	}
-    	
-    	if(size > 1){
-    		var = sum/(size-1);
-    	}else{
-    		var = sum/size;
-    	}
-    	var = Math.sqrt(var);
-    	double cv = var/Math.abs(mean);
-  
-    	
-    	/*strategy 5*/
-    	if(mean >= 0){
-    		int k1 = 9;
-    		double[] p1 = new double[k1];
-    		for(int k=0; k<k1; k++){
-        		p1[k] = 1.0 + 0.2*k;
-        	}
-    		double[] E1 = new double[k1];
-    		for(int i=0;i<k1;i++){
-    			double ss = 0.0;
-    			if(size <= 3){
-    				for(int n=0;n<size;n++){
-        				Solution sol = solSet.get(n);
-        				double sumV = 0.0;
-        				for(int m=0;m<numb;m++){
-        					sumV += Math.pow(sol.getNormalizedObjective(m), p1[i]);
-            			}
-        				//sumV = Math.pow(sumV, 1.0/p1[i]);
-        				ss += sumV;
-        			}
-        			E1[i] = (ss)/(size);
-    			}else{
-    				double minSum = Double.MAX_VALUE;
-    				double maxSum = Double.MIN_VALUE;
-    				for(int n=0;n<size;n++){
-        				Solution sol = solSet.get(n);
-        				double sumV = 0.0;
-        				for(int m=0;m<numb;m++){
-            				sumV += Math.pow(sol.getNormalizedObjective(m), p1[i]);
-            			}
-        				//sumV = Math.pow(sumV, 1.0/p1[i]);
-        				ss += sumV;
-        				if(sumV < minSum){
-        					minSum = sumV;
-        				}
-        				if(sumV > maxSum){
-        					maxSum = sumV;
-        				}
-        			}
-        			//E1[i] = (ss-minSum-maxSum)/(size-2);
-        			E1[i] = (ss)/(size);
-    			}
-    		}
-    		int minID = 0;
-        	double min = Math.abs(1.0 - E1[0]);
-        	for(int i=1;i<k1;i++){
-        		double value1 = Math.abs(1.0 - E1[i]);
-        		if(value1 < min){
-        			min = value1;
-        			minID = i;
-        		}
-        	}
-        	c = p1[minID];
-    	}else{
-    		int k2 = 5;
-    		double[] p2 = new double[k2];
-    		for(int k=0; k<k2; k++){
-        		p2[k] = 1.0 - 0.1*(k);
-        	}
-    		double[] E2 = new double[k2];
-    		for(int i=0;i<k2;i++){
-    			double ss = 0.0;
-    			if(size <= 3){
-    				for(int n=0;n<size;n++){
-        				Solution sol = solSet.get(n);
-        				double sumV = 0.0;
-        				for(int m=0;m<numb;m++){
-        					sumV += Math.pow(sol.getNormalizedObjective(m), p2[i]);
-            			}
-        				sumV = Math.pow(sumV, 1.0/p2[i]);
-        				ss += sumV;
-        			}
-        			E2[i] = (ss)/(size);
-    			}else{
-    				double minSum = Double.MAX_VALUE;
-    				double maxSum = Double.MIN_VALUE;
-    				for(int n=0;n<size;n++){
-        				Solution sol = solSet.get(n);
-        				double sumV = 0.0;
-        				for(int m=0;m<numb;m++){
-            				sumV += Math.pow(sol.getNormalizedObjective(m), p2[i]);
-            			}
-        				sumV = Math.pow(sumV, 1.0/p2[i]);
-        				ss += sumV;
-        				if(sumV < minSum){
-        					minSum = sumV;
-        				}
-        				if(sumV > maxSum){
-        					maxSum = sumV;
-        				}
-        			}
-        			//E2[i] = (ss-minSum-maxSum)/(size-2);
-        			E2[i] = (ss)/(size);
-    			}
-    		}
-    		int minID = 0;
-        	double min = Math.abs(1.0 - E2[0]);
-        	for(int i=1;i<k2;i++){
-        		double value1 = Math.abs(1.0 - E2[i]);
-        		if(value1 < min){
-        			min = value1;
-        			minID = i;
-        		}
-        	}
-        	c = p2[minID];
-        	double c1, c2;
-    	}
+	}
 
-    	//c = PseudoRandom.randDouble(p[minID[1]],p[minID[0]]);
-   
-    	if(c!=1.0){
-        	if(cv < 0.15){
-        		double rd = PseudoRandom.randDouble();
-        		if(mean < 0 && rd < 0.95){
-        			c = 1.0 - cv;
-        		}else if(mean > 0 && rd < 0.95){
-        			c = 1.0 + cv;
-        		}
-        	}/*else if(cv<0.2 && cv>=0.1){
+	public double computeWS(Solution so1, double[] re){
+		double value = 0.0;
+		double sum = 0.0;
+		for(int i=0; i<problem_.getNumberOfObjectives(); i++){
+			sum += re[i];
+		}
+		if(sum == 0){
+			sum = 0.000001;
+		}
+		for(int i=0; i<problem_.getNumberOfObjectives(); i++){
+			re[i] = re[i]/sum;
+			value += so1.getNormalizedObjective(i)*re[i];
+		}
+		return value;
+	}
+
+	public double computeLWS(Solution s, Solution r){
+		double value=0;
+		for(int i=0;i<problem_.getNumberOfObjectives();i++){
+			value+=s.getNormalizedObjective(i)*r.getNormalizedObjective(i);
+		}
+		return value;
+	}
+
+	public double estimation_Curvature(SolutionSet solutionSet){
+		SolutionSet solSet = solutionSet;
+		double c = 1.0;
+		int size = solSet.size();
+		int numb = problem_.getNumberOfObjectives();
+
+		double sum = 0.0;
+		double mean = 0.0;
+		double var = 0.0;
+
+		SolutionSet sSet = new SolutionSet();
+		for(int i=0;i<size;i++){
+			Solution sol = solSet.get(i);
+			sSet.add(sol);
+		}
+
+		for(int i=0;i<sSet.size();i++){
+			Solution sol = sSet.get(i);
+			for(int j=0; j<numb; j++){
+				if(sol.getNormalizedObjective(j) > 1.0){
+					sSet.remove(i);
+					i--;
+					break;
+				}
+			}
+		}
+		solSet = sSet;
+		size = sSet.size();
+
+		double[] dis = new double[size];
+		for(int i=0;i<size;i++){
+			Solution sol = solSet.get(i);
+			dis[i] = 0.0;
+			for(int j=0; j<numb; j++){
+				dis[i] += sol.getNormalizedObjective(j);
+			}
+			dis[i] = dis[i] - 1.0;
+			dis[i] = dis[i]/Math.sqrt(numb);
+			sum += dis[i];
+		}
+
+		mean = sum/size;
+
+		sum = 0.0;
+		for(int i=0;i<size;i++){
+			sum += Math.pow(dis[i]-mean, 2);
+		}
+
+		if(size > 1){
+			var = sum/(size-1);
+		}else{
+			var = sum/size;
+		}
+		var = Math.sqrt(var);
+		double cv = var/Math.abs(mean);
+
+
+		/*strategy*/
+		if(mean >= 0){
+			int T2 = 51;
+			double[] p1 = new double[T2];
+			for(int k=0; k<T2; k++){
+				p1[k] = 1.0 + 0.05*k;
+			}
+			double[] E1 = new double[T2];
+			for(int i=0;i<T2;i++){
+				double ss = 0.0;
+				if(size <= 3){
+					for(int n=0;n<size;n++){
+						Solution sol = solSet.get(n);
+						double sumV = 0.0;
+						for(int m=0;m<numb;m++){
+							sumV += Math.pow(sol.getNormalizedObjective(m), p1[i]);
+						}
+						//sumV = Math.pow(sumV, 1.0/p1[i]);
+						ss += sumV;
+					}
+					E1[i] = (ss)/(size);
+				}else{
+					double minSum = Double.MAX_VALUE;
+					double maxSum = Double.MIN_VALUE;
+					for(int n=0;n<size;n++){
+						Solution sol = solSet.get(n);
+						double sumV = 0.0;
+						for(int m=0;m<numb;m++){
+							sumV += Math.pow(sol.getNormalizedObjective(m), p1[i]);
+						}
+						//sumV = Math.pow(sumV, 1.0/p1[i]);
+						ss += sumV;
+						if(sumV < minSum){
+							minSum = sumV;
+						}
+						if(sumV > maxSum){
+							maxSum = sumV;
+						}
+					}
+					//E1[i] = (ss-minSum-maxSum)/(size-2);
+					E1[i] = (ss)/(size);
+				}
+			}
+			int minID = 0;
+			double min = Math.abs(1.0 - E1[0]);
+			for(int i=1;i<T2;i++){
+				double value1 = Math.abs(1.0 - E1[i]);
+				if(value1 < min){
+					min = value1;
+					minID = i;
+				}
+			}
+			c = p1[minID];
+		}else{
+			int T1 = 17;
+			double[] p2 = new double[T1];
+			for(int k=0; k<T1; k++){
+				p2[k] = 1.0 - 0.03*(k);
+			}
+			double[] E2 = new double[T1];
+			for(int i=0;i<T1;i++){
+				double ss = 0.0;
+				if(size <= 3){
+					for(int n=0;n<size;n++){
+						Solution sol = solSet.get(n);
+						double sumV = 0.0;
+						for(int m=0;m<numb;m++){
+							sumV += Math.pow(sol.getNormalizedObjective(m), p2[i]);
+						}
+						sumV = Math.pow(sumV, 1.0/p2[i]);
+						ss += sumV;
+					}
+					E2[i] = (ss)/(size);
+				}else{
+					double minSum = Double.MAX_VALUE;
+					double maxSum = Double.MIN_VALUE;
+					for(int n=0;n<size;n++){
+						Solution sol = solSet.get(n);
+						double sumV = 0.0;
+						for(int m=0;m<numb;m++){
+							sumV += Math.pow(sol.getNormalizedObjective(m), p2[i]);
+						}
+						sumV = Math.pow(sumV, 1.0/p2[i]);
+						ss += sumV;
+						if(sumV < minSum){
+							minSum = sumV;
+						}
+						if(sumV > maxSum){
+							maxSum = sumV;
+						}
+					}
+					//E2[i] = (ss-minSum-maxSum)/(size-2);
+					E2[i] = (ss)/(size);
+				}
+			}
+			int minID = 0;
+			double min = Math.abs(1.0 - E2[0]);
+			for(int i=1;i<T1;i++){
+				double value1 = Math.abs(1.0 - E2[i]);
+				if(value1 < min){
+					min = value1;
+					minID = i;
+				}
+			}
+			c = p2[minID];
+			double c1, c2;
+		}
+
+		//c = PseudoRandom.randDouble(p[minID[1]],p[minID[0]]);
+
+		if(c!=1.0){
+			if(cv < 0.15){
+				double rd = PseudoRandom.randDouble();
+				if(mean < 0 && rd < 0.95){
+					c = 1.0 - cv;
+				}else if(mean > 0 && rd < 0.95){
+					c = 1.0 + cv;
+				}
+			}/*else if(cv<0.2 && cv>=0.1){
         		double rd = PseudoRandom.randDouble();
         		if(mean < 0 && rd < 0.8){
         			c = 0.88;
@@ -882,34 +906,34 @@ public class FDEA2 extends Algorithm{
         			c = 1.25;
         		}
         	}*/
-    	}
-    	//c=1.7;
-    	return c;
-    }
-    
-    public void mapping(SolutionSet solSet, double curvature){
-    	double p = curvature;
-    	int size = solSet.size();
-    	int numb = problem_.getNumberOfObjectives();
-    	
-    	for(int i=0; i<size; i++){
-    		Solution sol = solSet.get(i);
-    		double normDistance = 0.0;
-    		double sumValue = 0.0;
-    		double distance = 0.0;
-    		for(int j=0; j<numb; j++){
-    			normDistance += Math.pow(sol.getNormalizedObjective(j), p);
-    			sumValue +=  sol.getNormalizedObjective(j);
-    			distance += Math.pow(sol.getNormalizedObjective(j), 2);
-    		}
-    		normDistance = Math.pow(normDistance, 1/p);
-    		distance = Math.sqrt(distance);
-    		
-    		sol.setDistanceToIdealPoint(normDistance);
-    		sol.setDistanceToNadirPoint(distance);
-    		sol.setSumValue(sumValue);
-    		
-    		if(sol.getDistanceToIdealPoint() == 0){
+		}
+		//c=1.7;
+		return c;
+	}
+
+	public void mapping(SolutionSet solSet, double curvature){
+		double p = curvature;
+		int size = solSet.size();
+		int numb = problem_.getNumberOfObjectives();
+
+		for(int i=0; i<size; i++){
+			Solution sol = solSet.get(i);
+			double normDistance = 0.0;
+			double sumValue = 0.0;
+			double distance = 0.0;
+			for(int j=0; j<numb; j++){
+				normDistance += Math.pow(sol.getNormalizedObjective(j), p);
+				sumValue +=  sol.getNormalizedObjective(j);
+				distance += Math.pow(sol.getNormalizedObjective(j), 2);
+			}
+			normDistance = Math.pow(normDistance, 1/p);
+			distance = Math.sqrt(distance);
+
+			sol.setDistanceToIdealPoint(normDistance);
+			sol.setDistanceToNadirPoint(distance);
+			sol.setSumValue(sumValue);
+
+			if(sol.getDistanceToIdealPoint() == 0){
 				//System.out.println("Error: This solution is in the origin");
 				double dis = 0.0;
 				/*for(int j=0; j<numb; j++){
@@ -921,59 +945,59 @@ public class FDEA2 extends Algorithm{
 				sol.setDistanceToNadirPoint(0.001);
 				//System.exit(0);
 			}
-    		
-    		for(int j=0; j<problem_.getNumberOfObjectives(); j++){
-    			double value1 = sol.getNormalizedObjective(j)/sol.getDistanceToIdealPoint();
-    			sol.setIthTranslatedObjective(j, value1);
-    			double value2 = sol.getNormalizedObjective(j)/sol.getDistanceToNadirPoint();
-    			sol.setUnitHypersphereObjective(j, value2);
-    		}
-    	}
-    }
-    
-    public int permutation(int N, int M){
-    	int result = 1;
-    	int n = N;
-    	int m = M;
-    	
-    	for(int i=m;i>0;i--){
-    		result *= n;
-    		n--;
-    	}
-    	
-    	return result;
-    }
-    public int combination(int N, int M){
-    	int result = 1;
-    	int n = N;
-    	int m = M;
-    	
-    	int half = n/2;
-    	if(m > half){
-    		m = n - m;
-    	}
-    	
-    	int  numerator = permutation(n, m);
-    	
-    	int denominator = permutation(m, m);
-    	
-    	result = numerator/denominator;
-    	
-    	return result;
-    }
-    
-    public void sss(){
-    	int numb = 12;
-    	int sumId = 0;
-    	double p = 1.0;
-    	double sumV = 0.0;
-    	for(int m=1;m<=numb;m++){
-    		int c = combination(numb,m);
-    		sumId += c;
-    		sumV += (((Math.pow(m,1.0-(1.0/p))-1.0)/Math.sqrt(numb))*(double)c);
-    	}
-    	
-    	double E = sumV/sumId;
-    }
+
+			for(int j=0; j<problem_.getNumberOfObjectives(); j++){
+				double value1 = sol.getNormalizedObjective(j)/sol.getDistanceToIdealPoint();
+				sol.setIthTranslatedObjective(j, value1);
+				double value2 = sol.getNormalizedObjective(j)/sol.getDistanceToNadirPoint();
+				sol.setUnitHypersphereObjective(j, value2);
+			}
+		}
+	}
+
+	public int permutation(int N, int M){
+		int result = 1;
+		int n = N;
+		int m = M;
+
+		for(int i=m;i>0;i--){
+			result *= n;
+			n--;
+		}
+
+		return result;
+	}
+	public int combination(int N, int M){
+		int result = 1;
+		int n = N;
+		int m = M;
+
+		int half = n/2;
+		if(m > half){
+			m = n - m;
+		}
+
+		int  numerator = permutation(n, m);
+
+		int denominator = permutation(m, m);
+
+		result = numerator/denominator;
+
+		return result;
+	}
+
+	public void sss(){
+		int numb = 12;
+		int sumId = 0;
+		double p = 1.0;
+		double sumV = 0.0;
+		for(int m=1;m<=numb;m++){
+			int c = combination(numb,m);
+			sumId += c;
+			sumV += (((Math.pow(m,1.0-(1.0/p))-1.0)/Math.sqrt(numb))*(double)c);
+		}
+
+		double E = sumV/sumId;
+	}
 
 }

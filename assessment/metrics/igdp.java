@@ -88,7 +88,7 @@ public class igdp {
 			}
 		}
 		//le o front real e atualiza os maiores e menores valores (pra incluir 0 como origem na maioria)
-		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("assessment/metrics/pareto/"+problem.toUpperCase()+"_"+objectiveNumber));
+		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("../assessment/metrics/pareto/"+problem.toUpperCase()+"_"+objectiveNumber));
 		for(int s=0;s<frontReal.size();s++){//solucoes dentro do front real
 			double[] solTemp=frontReal.get(s);
 			for(int o=0;o<objectiveNumber;o++){ //objetivos da solucao

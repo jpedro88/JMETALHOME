@@ -17,6 +17,9 @@ import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.ranking.NondominatedRanking;
 import jmetal.util.ranking.Ranking;
+import jmetal.util.Distance;
+import jmetal.util.comparators.ObjectiveComparator;
+
 
 public class FDEA extends Algorithm{
 	private int populationSize_;
@@ -422,8 +425,7 @@ public class FDEA extends Algorithm{
 			}
 		}
 	}
-	
-	
+
 	public void initExtremePoints() {
 		int obj = problem_.getNumberOfObjectives();
 		extremePoints_ = new double[obj][obj];
@@ -435,7 +437,6 @@ public class FDEA extends Algorithm{
 		
 	}
 
-	
 	void updateNadirPoint(SolutionSet pop){
 		
 		updateExtremePoints(pop);
@@ -489,10 +490,7 @@ public class FDEA extends Algorithm{
 			}
 		}
 	}
-	
-	
-	
-	
+
 	public void updateExtremePoints(SolutionSet pop){
 		for (int i = 0; i < pop.size(); i++)
 			updateExtremePoints(pop.get(i));
@@ -569,15 +567,69 @@ public class FDEA extends Algorithm{
 		dis = Math.sqrt(innerProduc);
 		return dis;
 	}
-    
+
+<<<<<<< HEAD
+=======
+	/*Calculo do CrowdingDistance*/
+	public void crowdingDistanceAssignment(SolutionSet solutionSet, int nObjs) {
+		int size = solutionSet.size();
+
+		if (size == 0)
+			return;
+
+		if (size == 1) {
+			solutionSet.get(0).setCrowdingDistance(Double.POSITIVE_INFINITY);
+			return;
+		} // if
+
+		if (size == 2) {
+			solutionSet.get(0).setCrowdingDistance(Double.POSITIVE_INFINITY);
+			solutionSet.get(1).setCrowdingDistance(Double.POSITIVE_INFINITY);
+			return;
+		} // if
+
+		//Use a new SolutionSet to evite alter original solutionSet
+		SolutionSet front = new SolutionSet(size);
+		for (int i = 0; i < size; i++){
+			front.add(solutionSet.get(i));
+		}
+
+		for (int i = 0; i < size; i++)
+			front.get(i).setCrowdingDistance(0.0);
+
+		double objetiveMaxn;
+		double objetiveMinn;
+		double distance;
+
+		for (int i = 0; i<nObjs; i++) {
+			// Sort the population by Obj n
+			front.sort(new ObjectiveComparator(i));
+			objetiveMinn = front.get(0).getObjective(i);
+			objetiveMaxn = front.get(front.size()-1).getObjective(i);
+
+			//Set de crowding distance
+			front.get(0).setCrowdingDistance(Double.POSITIVE_INFINITY);
+			front.get(size-1).setCrowdingDistance(Double.POSITIVE_INFINITY);
+
+			for (int j = 1; j < size-1; j++) {
+				distance = front.get(j+1).getObjective(i) - front.get(j-1).getObjective(i);
+				distance = distance / (objetiveMaxn - objetiveMinn);
+				distance += front.get(j).getCrowdingDistance();
+				front.get(j).setCrowdingDistance(distance);
+			} // for
+		} // for
+	} // crowdingDistanceAssing
+
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+
     public void getNextPopulation(SolutionSet[] subPopulation, int gen, int maxGen, int interv){
     	int objNumber = problem_.getNumberOfObjectives();
     	SolutionSet[] ReferenceSet = new LeastSimilarBasedSampling(subPopulation[0],objNumber)
     			.getIdealPointOrientedPopulation(objNumber);
     	subPopulation[0].clear();
-    	
+
     	SolutionSet subSets[] = new SolutionSet[populationSize_];
-    	
+
     	for(int i=0;i<objNumber;i++){
     		subSets[i] = new SolutionSet();
     		subSets[i].add(ReferenceSet[0].get(i));
@@ -633,18 +685,33 @@ public class FDEA extends Algorithm{
 			w[t] = re;
 			t++;
 		}*/
+<<<<<<< HEAD
+		/* seleção para a próxima geração
+=======
+		/* seleção para a próxima geração*/
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+		for (int i = 0; i < subSets.length; i++) {
+			if (subSets[i].size() > 0) {
+				crowdingDistanceAssignment(subSets[i], objNumber);
+			}
+<<<<<<< HEAD
+		}*/
+=======
+		}
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+
 		for(int i=0; i<objNumber;i++){
 			double rd = PseudoRandom.randDouble();
 			if(gen > 0.0*maxGen){
 				population_.add(subSets[i].get(0));
 			}else{
-				double minValue; 
+				double minValue;
 				//minValue = subSets[i].get(0).getDistanceToIdealPoint();
 				//minValue = subSets[i].get(0).getSumValue();
 				minValue = computeWS(subSets[i].get(0), re);
 				int minIndex = 0;
 				for(int j=1; j<subSets[i].size();j++){
-				   double value; 
+				   double value;
 				   //value = subSets[i].get(j).getDistanceToIdealPoint();
 				   //value = subSets[i].get(j).getSumValue();
 				   value = computeWS(subSets[i].get(j), re);
@@ -656,15 +723,15 @@ public class FDEA extends Algorithm{
 				population_.add(subSets[i].get(minIndex));
 			}
 		}
-		
+
 		for(int i=objNumber; i<populationSize_;i++){
-		    double minValue; 
+		    double minValue;
 			//minValue = subSets[i].get(0).getDistanceToIdealPoint();
 		    //minValue = subSets[i].get(0).getSumValue();
 			minValue = computeWS(subSets[i].get(0), re);
 			int minIndex = 0;
 			for(int j=1; j<subSets[i].size();j++){
-			   double value; 
+			   double value;
 			   //value = subSets[i].get(j).getDistanceToIdealPoint();
 			   //value = subSets[i].get(j).getSumValue();
 			   value = computeWS(subSets[i].get(j), re);
@@ -700,7 +767,7 @@ public class FDEA extends Algorithm{
     	}
     	return value;
     }
-    
+
     public double estimation_Curvature(SolutionSet solutionSet){
     	SolutionSet solSet = solutionSet;
     	double c = 1.0;
@@ -756,8 +823,7 @@ public class FDEA extends Algorithm{
     	}
     	var = Math.sqrt(var);
     	double cv = var/Math.abs(mean);
-  
-    	
+
     	/*strategy*/
     	if(mean >= 0){
     		int T2 = 51;
@@ -772,7 +838,7 @@ public class FDEA extends Algorithm{
     				for(int n=0;n<size;n++){
         				Solution sol = solSet.get(n);
         				double sumV = 0.0;
-        				for(int m=0;m<numb;m++){
+        				for(int m=0;m< numb;m++){
         					sumV += Math.pow(sol.getNormalizedObjective(m), p1[i]);
             			}
         				//sumV = Math.pow(sumV, 1.0/p1[i]);

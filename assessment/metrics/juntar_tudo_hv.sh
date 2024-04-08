@@ -9,13 +9,13 @@ EFS="
 for problem in $1; do
 #problem=$1
 	rm -f "results/all-$problem-hv.txt"
-	#for objectives in 3 5 8 10 15 20; do
-	for objectives in 3; do
+	for objectives in 2 3 5 8 10 15; do
+	#for objectives in 3; do
 	#for objectives in 2 3 5 8 9; do
 		for nomeSaida in $entradas; do
 			comando=$comando"results/$nomeSaida""$problem-$objectives"_"fronts.txt "
 		done
-		java -Xmx1G -cp assessment/metrics/ hv $comando >> "results/all-$problem-hv.txt" 
+		java -Xmx1G -cp ../assessment/metrics/ hv $comando >> "results/all-$problem-hv.txt"
 
 		unset comando;
 		echo $EFS >> "results/all-$problem-hv.txt"

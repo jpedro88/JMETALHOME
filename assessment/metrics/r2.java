@@ -17,6 +17,7 @@ public class r2 {
 	public static void main(String[] args) throws IOException{
 		int numExec=30;
 		int objectiveNumber=-1;
+//		int objectiveNumber=1;
 		if(args.length == 0){
 			System.err.println("uso: r2 front1 ... frontN");
 			System.exit(1);
@@ -87,8 +88,9 @@ public class r2 {
 				}
 			}
 		}
+		objectiveNumber++;
 		//le o front real e atualiza os maiores e menores valores (pra incluir 0 como origem na maioria)
-		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("assessment/metrics/pareto/REF_"+objectiveNumber));
+		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("../assessment/metrics/pareto/REF_"+objectiveNumber));
 // // 		for(int s=0;s<frontReal.size();s++){//solucoes dentro do front real
 // // 			double[] solTemp=frontReal.get(s);
 // // 			for(int o=0;o<objectiveNumber;o++){ //objetivos da solucao

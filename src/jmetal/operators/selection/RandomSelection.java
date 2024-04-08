@@ -25,6 +25,10 @@ import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
+import jmetal.util.comparators.DominanceComparator;
+
+import java.util.Comparator;
+
 
 import java.util.HashMap;
 
@@ -32,7 +36,11 @@ import java.util.HashMap;
  * This class implements a random selection operator used for selecting two
  * random parents
  */
+
+
 public class RandomSelection extends Selection {
+
+	private Comparator comparator_;
 	public RandomSelection(HashMap<String, Object> parameters) {
 		super(parameters);
 	}
@@ -61,12 +69,15 @@ public class RandomSelection extends Selection {
 	} // Execute
 
 //	public Object execute(Object object){
+//		int pos1=0,pos2=0;
 //		SolutionSet solutionSet = (SolutionSet) object;
+//		SolutionSet population = (SolutionSet) object;
 //		Solution solution1, solution2, solution3, solution4;
 //		solution1 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 //		solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 //		solution3 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 //		solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+//		comparator_ = new DominanceComparator();
 //
 //		Solution[] parents = new Solution[2];
 //		parents[0] = population.get(pos1);
@@ -78,6 +89,7 @@ public class RandomSelection extends Selection {
 //				solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 //
 //		int flag = comparator_.compare(solution1,solution2);
+//
 //		if (flag == -1)
 //			parents[0] = solution1;
 //		else if (flag == 1)
@@ -92,7 +104,7 @@ public class RandomSelection extends Selection {
 //			while (solution3 == solution4)
 //				solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 //
-//		int flag = comparator_.compare(solution3,solution4);
+//		int flag1 = comparator_.compare(solution3,solution4);
 //		if (flag == -1)
 //			parents[1] = solution3;
 //		else if (flag == 1)
@@ -101,7 +113,7 @@ public class RandomSelection extends Selection {
 //		if (PseudoRandom.randDouble()<0.5)
 //			parents[1] = solution3;
 //		else
-//			parents[1]= solution4;
+//			parents[1] = solution4;
 //
 //		return parents;
 //	} // execute

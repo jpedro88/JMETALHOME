@@ -134,7 +134,7 @@ public class FDEA_main_3obj_modificado{
 		logger_.addHandler(fileHandler_);
 
 
-		int runtimes=10;
+		int runtimes=1;
 		double[] IGDarray=new double[runtimes];
 		double[] HVarray = new double[runtimes];
 		long Execution_time=0;
@@ -153,6 +153,10 @@ public class FDEA_main_3obj_modificado{
 		//QualityIndicator //indicators;// Object to get quality //indicators
 		//	//indicators = null;
 
+		int qtdpopulation = 0;
+		int gmax = 0;
+		int div1 = 0;
+		int div2 = 0;
 
 		if(args.length != 2){
 			System.out.println( "usage: FDEA_main <problem, obj Number>" );
@@ -162,37 +166,87 @@ public class FDEA_main_3obj_modificado{
 			int WFGK=0;
 			WFGK = 2*(objectiveNumber-1);
 
+			switch (objectiveNumber){
+				case 2:
+					qtdpopulation = 100;
+					gmax = 300;
+					div1 = 14;
+					break;
+				case 3:
+					qtdpopulation = 120;
+					gmax = 500;
+					div1 = 14;
+					break;
+				case 5:
+					qtdpopulation = 210;
+					gmax = 600;
+					div1 = 6;
+					break;
+				case 8:
+					qtdpopulation = 240;
+					gmax = 800;
+					div1 = 14;
+					break;
+				case 10:
+					qtdpopulation = 275;
+					gmax = 1000;
+					div1 = 3;
+					div2 = 2;
+					break;
+				case 15:
+					qtdpopulation = 240;
+					gmax = 1500;
+					div1 = 2;
+					div2 = 2;
+					break;
+			}
+
 			if (args[0].equals("dtlz1")) {
 				//problem = new DTLZ1("Real",10,2);
 				System.out.println("Entrou");
+				System.out.println("DTLZ 1");
+				System.out.println("Objective Number: "+objectiveNumber);
 				problem = new DTLZ1("Real", objectiveNumber+5-1, objectiveNumber);
 			}
 			else if (args[0].equals("dtlz2")) {
 				System.out.println("Entrou");
+				System.out.println("DTLZ 2");
+				System.out.println("Objective Number: "+objectiveNumber);
 				problem = new DTLZ2("Real", objectiveNumber+5-1, objectiveNumber);
 			}
 			else if (args[0].equals("dtlz3")) {
 				System.out.println("Entrou");
+				System.out.println("DTLZ 3");
+				System.out.println("Objective Number: "+objectiveNumber);
 				problem = new DTLZ3("Real", objectiveNumber+10-1, objectiveNumber);
 			}
 			else if (args[0].equals("dtlz4")) {
 				//problem = new DTLZ1("Real",10,2);
 				System.out.println("Entrou");
+				System.out.println("DTLZ 4");
+				System.out.println("Objective Number: "+objectiveNumber);
 				problem = new DTLZ4("Real", objectiveNumber+10-1, objectiveNumber);
 			}
 			else if (args[0].equals("dtlz5")) {
 				//problem = new DTLZ1("Real",10,2);
 				System.out.println("Entrou");
+				System.out.println("DTLZ 5");
+				System.out.println("Objective Number: "+objectiveNumber);
 				problem = new DTLZ5("Real", objectiveNumber+10-1, objectiveNumber);
 			}
 			else if (args[0].equals("dtlz6")) {
 				//problem = new DTLZ1("Real",10,2);
+				System.out.println("Entrou");
+				System.out.println("DTLZ 6");
+				System.out.println("Objective Number: "+objectiveNumber);
 				System.out.println("Entrou");
 				problem = new DTLZ6("Real", objectiveNumber+10-1, objectiveNumber);
 			}
 			else if (args[0].equals("dtlz7")) {
 				//problem = new DTLZ1("Real",10,2);
 				System.out.println("Entrou");
+				System.out.println("DTLZ 7");
+				System.out.println("Objective Number: "+objectiveNumber);
 				problem = new DTLZ7("Real", objectiveNumber+20-1, objectiveNumber);
 			}
 			else if (args[0].equals("wfg1")) {
@@ -253,19 +307,17 @@ public class FDEA_main_3obj_modificado{
 			}
 
 		}
-	for(int fun=0;fun<=9;fun++){
+//	for(int fun=0;fun<=9;fun++){
 
+		//algorithm = new FDEA1(problem);
 		algorithm = new FDEA(problem);
-
-
-
 		//algorithm = new NHaEA_Max(problem);
 
-		algorithm.setInputParameter("maxGenerations", 500);
-		algorithm.setInputParameter("populationSize", 120);
+		algorithm.setInputParameter("maxGenerations", gmax);
+		algorithm.setInputParameter("populationSize", qtdpopulation);
 		algorithm.setInputParameter("T", 12);
-		algorithm.setInputParameter("div1", 14);
-		algorithm.setInputParameter("div2", 0);
+		algorithm.setInputParameter("div1", div1);
+		algorithm.setInputParameter("div2", div2);
 
 		// Mutation and Crossover for Real codification
 		parameters = new HashMap();
@@ -284,48 +336,42 @@ public class FDEA_main_3obj_modificado{
 
 		parameters = null;
 
-		/*Seleção*/
-
+				/*Seleção*/
 
 		selection = SelectionFactory.getSelectionOperator("RandomSelection",
 				parameters);
 //		selection = SelectionFactory.getSelectionOperator("BinaryTournament2",
 //						parameters);
 
-
-
-
-
-
-		// Add the operators to the algorithm
+// Add the operators to the algorithm
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
 		algorithm.addOperator("selection", selection);
-		var teste=10;
-		for(int i=0;i<teste;i++){
+		//var teste=10;
+		//for(int i=0;i<teste;i++){
 			long initTime = System.currentTimeMillis();
 			SolutionSet population = algorithm.execute();
 			Execution_time+=(System.currentTimeMillis() - initTime);
-			population.printObjectivesToFile("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"_run"+ (i+1)  + "Modificado.txt");
-        /*if(fun>=29 && fun<=30){
-			population.printVariablesToFile("NHaEA_Min_Variables_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"run_"+ (i+1)  + ".txt");
-		}*/
+//			population.printObjectivesToFile("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"_run"+ (i+1)  + "ModificadoVAR.txt");
+			population.printObjectivesToFile("VAR0");
+//			population.printObjectivesToFile("VAR0CD");
+
+//			population.printVariablesToFile("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"run_"+ (i+1)  + "ModificadoFUN.txt");
+			population.printVariablesToFile("FUN0");
+//			population.printVariablesToFile("FUN0CD");
+
 			//IGDarray[i]=indicators.getIGD1(population);
-			wfghvCalculator1 wfg = new wfghvCalculator1(population);
-			HVarray[i] = wfg.calculatewfghv();
-		}
-	}//for-fun
+//			wfghvCalculator1 wfg = new wfghvCalculator1(population);
+//			HVarray[i] = wfg.calculatewfghv();
+		//}
+//	}//for-fun
 		//printGD("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"_IGD.txt",IGDarray);
 		//printGD("FDEA_"+problem.getNumberOfObjectives()+"Obj_"+problem.getName()+"_HV.txt",HVarray);
 		double sumIGD=0;
 		double sumHV=0.0;
-		for(int i=0;i<runtimes;i++){
-			sumIGD+=IGDarray[i];
-			sumHV+=HVarray[i];
-		}
+
 		logger_.info("Total execution time: " + Execution_time + "ms");
-//		System.out.println("avrIGD-fun= "+sumIGD/runtimes);
-		System.out.println("avrHV-fun= "+sumHV/runtimes);
+
 
 	}//main
 }

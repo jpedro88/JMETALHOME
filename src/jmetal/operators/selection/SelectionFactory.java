@@ -55,6 +55,10 @@ public class SelectionFactory {
 			return new RankingAndCrowdingSelection(parameters);
 		else if (name.equalsIgnoreCase("DifferentialEvolutionSelection"))
 			return new DifferentialEvolutionSelection(parameters);
+		else if (name.equalsIgnoreCase("HyperVolume"))
+			return new HyperVolume(parameters);
+		else if (name.equalsIgnoreCase("BinaryTournamentcdtb"))
+			return new HyperVolume(parameters);
 		else {
 			Configuration.logger_.severe("Operator '" + name + "' not found ");
 			throw new JMException("Exception in " + name

@@ -123,7 +123,7 @@ public class ksk_full {
 			}
 		}
 // 		saida+="require(pgirmess);";
-		saida+="require(PMCMR);";
+		saida+="require(PMCMRplus);";
 		saida+="options(width=1000);";//set the line width, so there is no line break on the output, this was causing issues with more than 10 algorithms
 		sets=(sets.substring(0,sets.length()-1));
 		categs=(categs.substring(0,categs.length()-1));
@@ -136,7 +136,7 @@ public class ksk_full {
 		saida+="print(result);";
 		//saida+="pos_teste<-friedmanmc(AR1);";
 // 		saida+="pos_teste<-kruskalmc(AR1,categ);";
-		saida+="pos_teste<-posthoc.kruskal.nemenyi.test(AR1, categ, method='Tukey');";
+		saida+="pos_teste<-kwAllPairsNemenyiTest(AR1, categ, method='Tukey');";
 		
 		saida+="print(pos_teste);";
 		//System.out.println(saida);
@@ -191,7 +191,7 @@ public class ksk_full {
 			String comando="Rscript rScript.r";//teste mostrando todas as diferencas e o p-value
 
 			
-// 			System.out.println(comando);
+// 			System.out.println("#### Log:"+comando);
 			//String comando="echo \""+saida+"\" | R --no-save | tail -"+combinacoes;//teste mostrando todas as diferencas
 			//System.out.println(saida);
 			//System.exit(1);
@@ -200,16 +200,18 @@ public class ksk_full {
  			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
  			
  			File file = new File("rScript.r");
-			if(!file.delete())
-				System.out.println("script file delete operation failed.");
+//			if(!file.delete())
+//				System.out.println("script file delete operation failed.");
 
 			String line;
 			ArrayList<String> lines = new ArrayList<String>();
+			System.out.println("#### Lines");
 			while ((line=br.readLine()) != null) {
-// 				System.out.println(line);
+ 				System.out.println(line);
 				lines.add(line);
 			}
-			System.out.println(lines.get(0));
+<<<<<<< HEAD
+// // 			System.out.println(lines.get(0));
 			System.out.println(lines.get(1));
 			System.out.println(lines.get(3));
 			System.out.println(lines.get(4));
@@ -220,13 +222,39 @@ public class ksk_full {
 			//ArrayList<double[]> matrix = new ArrayList<double[]>();
 			double[][] matrix = new double[combinacoes][combinacoes];
 			
-			for(int i=lines.size()-combinacoes-1;i<lines.size()-2;i++){
+			
+// 			for(int i=lines.size()-combinacoes+1;i<lines.size();i++){
+// 				System.out.println("line "+i+":"+lines.get(i));
+// 			}
+// 			System.out.println("comb "+combinacoes);
+			
+			
+			for(int i=lines.size()-combinacoes+1;i<lines.size();i++){
+=======
+			System.out.println("#### Lines");
+//			System.out.println(lines.get(0));
+//			System.out.println(lines.get(1));
+//			System.out.println(lines.get(3));
+//			System.out.println(lines.get(4));
+//
+//// 			System.out.println();
+//			System.out.println("Comparisons");
+//			System.out.println("    p-value limit p-value difference");
+			//ArrayList<double[]> matrix = new ArrayList<double[]>();
+			double[][] matrix = new double[combinacoes][combinacoes];
+			for(int i=lines.size()-combinacoes+1;i<lines.size()-2;i++){
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
 				double[] splittedValue = new double[combinacoes];
 // 				System.out.println(lines.get(i)+"\t\t("+i+")");
 
 				for(int j=0;j<combinacoes-1;j++){
+//					System.out.println("#### "+lines.get(i));
 					String part=lines.get(i).replace("<","").split("\\s+")[j+1];
-// 					System.out.println(part);
+<<<<<<< HEAD
+// 					System.out.println("p"+j+" "+part);
+=======
+ 					System.out.println(part);
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
 					
 					if(part.compareTo("-") !=0 ){
 // 						System.out.println(lines.get(i));
@@ -236,7 +264,7 @@ public class ksk_full {
 // 						System.exit(1);
 					
 						int l=Integer.parseInt(lines.get(i).split("\\s+")[0])-1;
-						int c=Integer.parseInt(lines.get(lines.size()-combinacoes-2).split("\\s+")[j+1])-1;
+						int c=Integer.parseInt(lines.get(lines.size()-combinacoes).split("\\s+")[j+1])-1;
 						//System.out.println(l+" x "+c);
 					
 						matrix[l][c]=Double.parseDouble(part);
@@ -278,7 +306,7 @@ public class ksk_full {
 // 				System.out.println();
 // 			}
 			
-			System.out.println(">");
+// 			System.out.println(">");
 				
 			
 		}catch (Exception e){	e.printStackTrace();}

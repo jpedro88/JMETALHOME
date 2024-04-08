@@ -74,12 +74,12 @@ public class hype_main {
 	public static void printGD(String path,double[] GD){
 	    try {
 	      /* Open the file */
-	      FileOutputStream fos   = new FileOutputStream(path)     ;//javaÎÄ¼þÊä³öÁ÷£¬´´½¨ÎÄ¼þÁ÷
-	      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;//OutputStreamWriterÊÇ×Ö·ûÁ÷Í¨Ïò×Ö½ÚÁ÷µÄÇÅÁº 
-	      BufferedWriter bw      = new BufferedWriter(osw)        ;//»º³åÇø               
+	      FileOutputStream fos   = new FileOutputStream(path)     ;//javaï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
+	      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;//OutputStreamWriterï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	      BufferedWriter bw      = new BufferedWriter(osw)        ;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½               
 	      for (int i = 0; i < GD.length; i++) {  
-	        bw.write(GD[i]+" ");//Ð´µ½»º³åÇø
-	        bw.newLine(); //»»ÐÐ       
+	        bw.write(GD[i]+" ");//Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	        bw.newLine(); //ï¿½ï¿½ï¿½ï¿½       
 	      }
 	      
 	      /* Close the file */

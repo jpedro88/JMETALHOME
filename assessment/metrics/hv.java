@@ -94,7 +94,7 @@ public class hv {
 			}
 		}
 		//le o front real e atualiza os maiores e menores valores (pra incluir 0 como origem na maioria)
-		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("assessment/metrics/pareto/"+problem.toUpperCase()+"_"+objectiveNumber));
+		ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("../assessment/metrics/pareto/"+problem.toUpperCase()+"_"+objectiveNumber));
 		//ArrayList<double[]> frontReal=new ArrayList<double[]>(lerReal("pareto/DTLZ"+problem+"_"+objectiveNumber));
 		for(int s=0;s<frontReal.size();s++){//solucoes dentro do front real
 			double[] solTemp=frontReal.get(s);
@@ -171,7 +171,7 @@ public class hv {
 				
 			String comando="";
 			if(front.get(0).length <= 10){
-				comando+="assessment/metrics/hv/wfg /tmp/temp"+tempname+".txt"+ref+" | head -1";
+				comando+="../assessment/metrics/hv/wfg /tmp/temp"+tempname+".txt"+ref+" | head -1";
 				
 			Process p =  Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", comando});
 			p.waitFor();

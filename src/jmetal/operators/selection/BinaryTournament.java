@@ -26,9 +26,15 @@ import jmetal.core.SolutionSet;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
+import jmetal.util.comparators.CrowdingDistanceComparator;
 
 import java.util.Comparator;
 import java.util.HashMap;
+
+
+
+
+
 
 /**
  * This class implements an binary tournament selection operator
@@ -47,39 +53,91 @@ public class BinaryTournament extends Selection {
    */
   public BinaryTournament(HashMap<String, Object> parameters){
   	super(parameters) ;
-  	if ((parameters != null) && (parameters.get("comparator") != null))
-  		comparator_ = (Comparator) parameters.get("comparator") ;  	
-  	else
-      //comparator_ = new BinaryTournamentComparator();
+
       comparator_ = new DominanceComparator();
+
+
   } // BinaryTournament
-  
+
   /**
   * Performs the operation
   * @param object Object representing a SolutionSet
   * @return the selected solution
   */
-  public Object execute(Object object){
-    SolutionSet solutionSet = (SolutionSet)object;
-    Solution solution1, solution2;
-    solution1 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-    solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+<<<<<<< HEAD
 
-    if (solutionSet.size() >= 2)
-    	while (solution1 == solution2)
-        solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
-    
-    int flag = comparator_.compare(solution1,solution2);
-    if (flag == -1)
-      return solution1;
-    else if (flag == 1)
-      return solution2;
-    else
-      if (PseudoRandom.randDouble()<0.5)
-        return solution1;
-      else
-        return solution2;                       
-  } // execute
+  //verificar
+  	public Object execute(Object object){
+		int pos1=0,pos2=0;
+		SolutionSet solutionSet = (SolutionSet) object;
+		SolutionSet population = (SolutionSet) object;
+		Solution solution1, solution2, solution3, solution4;
+		solution1 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		solution3 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		comparator_ = new DominanceComparator();
+
+=======
+  	public Object execute(Object object){
+		int pos1=0,pos2=0;
+		SolutionSet solutionSet = (SolutionSet) object;
+		SolutionSet population = (SolutionSet) object;
+		Solution solution1, solution2, solution3, solution4;
+		solution1 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		solution3 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+		comparator_ = new DominanceComparator();
+
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+		Solution[] parents = new Solution[2];
+		parents[0] = population.get(pos1);
+		parents[1] = population.get(pos2);
+
+
+		if (solutionSet.size() >= 2)
+			while (solution1 == solution2)
+				solution2 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+
+		int flag = comparator_.compare(solution1,solution2);
+
+		if (flag == -1)
+			parents[0] = solution1;
+		else if (flag == 1)
+			parents[0] = solution2;
+		else
+<<<<<<< HEAD
+
+=======
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+		if (PseudoRandom.randDouble()<0.5)
+			parents[0] = solution1;
+		else
+			parents[0]= solution2;
+
+		if (solutionSet.size() >= 2)
+			while (solution3 == solution4)
+				solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
+
+		int flag1 = comparator_.compare(solution3,solution4);
+<<<<<<< HEAD
+		
+		if (flag1 == -1)
+=======
+		if (flag == -1)
+>>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+			parents[1] = solution3;
+		else if (flag == 1)
+			parents[1] = solution4;
+		else
+		if (PseudoRandom.randDouble()<0.5)
+			parents[1] = solution3;
+		else
+			parents[1] = solution4;
+
+		return parents;
+	} // execute
 
 @Override
 public Object execute(Object object, double delta) throws JMException {
