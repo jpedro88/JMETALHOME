@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
-<<<<<<< HEAD
 <record>
-  <date>2024-04-07T19:07:28.086562035Z</date>
-  <millis>1712516848086</millis>
-  <nanos>562035</nanos>
+  <date>2024-05-03T18:57:55.833692078Z</date>
+  <millis>1714762675833</millis>
+  <nanos>692078</nanos>
   <sequence>0</sequence>
   <logger>jMetal</logger>
   <level>INFO</level>
-  <class>jmetal.metaheuristics.fdea.FDEA_main_cd</class>
+  <class>jmetal.metaheuristics.fdea.FDEA_main_cdtb</class>
   <method>main</method>
   <thread>1</thread>
-  <message>Total execution time: 74619ms</message>
+  <message>Total execution time: 1041ms</message>
 </record>
-=======
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
 </log>

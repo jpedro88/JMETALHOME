@@ -1,17 +1,17 @@
 #problems="dtlz1 dtlz2 dtlz3 dtlz4 dtlz5 dtlz6 dtlz7 wfg1 wfg2 wfg3 wfg4 wfg5 wfg6 wfg7 wfg8 wfg9"
-<<<<<<< HEAD
+
  problems="dtlz1 dtlz2 dtlz3 dtlz4 dtlz5 dtlz6 dtlz7"
 #problems="dtlz1"
 objectives="2 3 5 8 10 15"
 # metrics="gdp igdp hv r2"
 metrics="igd"
-=======
+
 # problems="dtlz1 dtlz2 dtlz3 dtlz4 dtlz5 dtlz6 dtlz7"
  problems="dtlz1"
 objectives="3"
 # metrics="gdp igdp hv r2"
 metrics="gd igd r2"
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+
 EFS="
 "
 

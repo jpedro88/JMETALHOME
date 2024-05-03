@@ -87,11 +87,10 @@ public class BinaryTournament3 extends Selection {
 			return solution1;
 		else if (flag == 1)
 			return solution2;
-		else if (solution1.getCrowdingDistance() > solution2
-				.getCrowdingDistance())
+
+		else if (solution1.getCrowdingDistance() > solution2.getCrowdingDistance())
 			return solution1;
-		else if (solution2.getCrowdingDistance() > solution1
-				.getCrowdingDistance())
+		else if (solution2.getCrowdingDistance() > solution1.getCrowdingDistance())
 			return solution2;
 		else if (PseudoRandom.randDouble() < 0.5)
 			return solution1;

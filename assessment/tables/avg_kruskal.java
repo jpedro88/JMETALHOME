@@ -13,11 +13,10 @@ import java.util.Scanner;
 import java.io.FileWriter; 
 import java.io.File;
 
-public class kruskal_rank_full{
+public class avg_kruskal{
 	public static void println(String x){System.out.println(x);}
 	public static void println(){System.out.println();}
-	static String caminho="../../../src/results/";
-//	static String caminho="../../../results/up_to_20/";
+	static String caminho="../../src/results/";
 	//static String caminho="../../../results_primeira-parte/";
 	static String table[][];
 	static double[][] matrizGeral;
@@ -25,15 +24,15 @@ public class kruskal_rank_full{
 
 	public static void main(String[] args) throws IOException{
 		//String objectives[]={"2","3","5","10","15","20"};
-		String objectives[]={"2","3","5","8","10","15"};
-// 		String objectives[]={"2","3","5","8"};
-//		String metrics[] = {"$GD_p$", "$IGD_p$", "$R_2$", "Hypervolume"};
-// 		String metrics[] = {"$IGD_p$"};
+ 		String objectives[]={"2","3","5"};
+//		String objectives[]={"2","3","5"};
+// 		String metrics[] = {"$GD_p$", "$IGD_p$", "$R_2$", "Hypervolume"};
+//		String metrics[] = {"$IGD_p$" };
  		String metrics[]={"Hypervolume"};
 //		String[] problems={"dtlz1", "dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7", "wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
 // 		String[] problems={"dtlz1", "dtlz2", "dtlz3", "dtlz4", "dtlz5", "dtlz6", "dtlz7"};
- 		String[] problems={"wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
-// 		String[] problems={"dtlz2"};
+  		String[] problems={"wfg1", "wfg2", "wfg3", "wfg4", "wfg5", "wfg6", "wfg7", "wfg8", "wfg9"};
+//		String[] problems={"dtlz1"};
 
 		String[] titles=readTitles();
 		
@@ -88,6 +87,10 @@ public class kruskal_rank_full{
 	// 		}
 			
 			System.out.println("(crit. Diff: "+criticalDifference+")");
+			if(criticalDifference==0){
+				System.out.println("Critical difference cannot be 0. Check R and packages instalation!");
+				System.exit(1);
+			}
 			//montando o final da tabela
 			println("\n"+saida);
 			for(int i=0;i<table.length;i++){
@@ -123,6 +126,7 @@ public class kruskal_rank_full{
 		}
 		return titles;
 	}
+	
 	public static String[][] readData(int algorithms, int objectiveNumber, String problem, String metric, int index)throws IOException{ //
 		ArrayList<double[]> dados = new ArrayList<double[]>();
 		String retorno[][] = new String[objectiveNumber][algorithms];
@@ -163,70 +167,108 @@ public class kruskal_rank_full{
 	public static String[] operacoes(ArrayList<double[]> dados, int index) throws IOException {
 		int colunas=dados.get(0).length;
 		String saida[]= new String[colunas];
-		boolean[][] matriz = new boolean[colunas][colunas];
-		double ranks[][] = new double[dados.size()][colunas];
-		double avgRanks[] = new double[colunas];
-		double tamTotal=dados.size()*colunas;
-		ArrayList<Double> lista = new ArrayList<Double>();
-		int indMenor=-1;
 		double menorValor=Double.MAX_VALUE;
-		int contRank=1;		
-		//ranqueia considerando todas as 30 instancias (N=300)
-		while(true){
-			for(int i=0;i<tamTotal;i++){
-				double valor=dados.get(i/colunas)[i%colunas];
-				if(valor < menorValor && !(listado(lista,valor)) ){
-					menorValor=valor;
-					indMenor=i;
-				}
-			}
-			if(indMenor==-1)
-				break;
-			lista.add(menorValor);
-			indMenor=-1;
-			menorValor=Double.MAX_VALUE;
-		}
-		contRank=1;
-		for(int i=0;i<lista.size();i++){
-			double rankAtual=0;
-			ArrayList<Integer> valores=encontraValores(dados, lista.get(i));
-			for(int j=0;j<valores.size();j++)
-				rankAtual+=contRank++;
-			rankAtual/=(double)valores.size();
-			for(int j=0;j<valores.size();j++){
-				ranks[valores.get(j)/colunas][valores.get(j)%colunas]=rankAtual;
-			}				
-		}
-
- 		matriz=execute_ksk(dados);
-
-		for(int i=0;i<ranks.length;i++){
-			for(int j=0;j<ranks[0].length;j++){
-				avgRanks[j]+=ranks[i][j];
-				//System.out.print(format(ranks[i][j])+"\t");
-			}
-			//System.out.println();
- 		}
- 		for(int i=0;i<avgRanks.length;i++){
-			avgRanks[i]/=ranks.length; //kruskal
-			//System.out.print(format(avgRanks[i])+"\t");
-		}
-		matrizGeral[index]=avgRanks;
-		
-		double[] ranksFinais=rankStatistics(avgRanks, matriz);
+		double medias[] = calcularMedias(dados);
+		double stdevs[] = calcularDesvios(dados);
+		double[][] matriz = new double[colunas][colunas];
+// 		for(int i=0;i<colunas;i++)
+// 			System.out.print(medias[i]+"("+stdevs[i]+") ");
+// 		System.out.println();
+		matriz=execute_ksk(dados);
 		
 		menorValor=Double.MAX_VALUE;
-		for(int j=0;j<colunas;j++)
-			if(ranksFinais[j] < menorValor)
-				menorValor=ranksFinais[j];
- 		
+		int indMenor=-1;
 		for(int j=0;j<colunas;j++){
-			if(ranksFinais[j] == menorValor)
-				saida[j]="\\cellcolor{gray!30}\\textbf{"+format(avgRanks[j])+" ("+format(ranksFinais[j])+")"+"}";
+			if(medias[j] < menorValor){
+				menorValor=medias[j];
+				indMenor=j;
+			}
+		}
+		for(int j=0;j<colunas;j++){
+			if(medias[j] == menorValor || matriz[indMenor][j] > criticalDifference)
+				saida[j]="\\cellcolor{gray!30}\\textbf{"+format(medias[j])+"$\\pm$"+format(stdevs[j])+""+"}";
 			else
-				saida[j]=format(avgRanks[j])+" ("+format(ranksFinais[j])+")";
-		}		
+				saida[j]=format(medias[j])+"$\\pm$"+format(stdevs[j])+"";
+		}
+		
+		
+// 		System.out.println();
+// 		for(int i=0;i<colunas;i++){
+// 			for(int j=0;j<colunas;j++)
+// 				System.out.print(matriz[i][j]+"\t");
+// 			System.out.println();
+// 		}
  		return saida;
+		
+		
+	
+	
+// 		double[][] matriz = new double[colunas][colunas];
+// 		double ranks[][] = new double[dados.size()][colunas];
+// 		double avgRanks[] = new double[colunas];
+// 		double tamTotal=dados.size()*colunas;
+// 		ArrayList<Double> lista = new ArrayList<Double>();
+// 		int indMenor=-1;
+// 		
+// 		int contRank=1;
+// 		//ranqueia considerando todas as 30 instancias (N=300)
+// 		while(true){
+// 			for(int i=0;i<tamTotal;i++){
+// 				double valor=dados.get(i/colunas)[i%colunas];
+// 				if(valor < menorValor && !(listado(lista,valor)) ){
+// 					menorValor=valor;
+// 					indMenor=i;
+// 				}
+// 			}
+// 			if(indMenor==-1)
+// 				break;
+// 			lista.add(menorValor);
+// 			indMenor=-1;
+// 			menorValor=Double.MAX_VALUE;
+// 		}
+// 		contRank=1;
+// 		for(int i=0;i<lista.size();i++){
+// 			double rankAtual=0;
+// 			ArrayList<Integer> valores=encontraValores(dados, lista.get(i));
+// 			for(int j=0;j<valores.size();j++)
+// 				rankAtual+=contRank++;
+// 			rankAtual/=(double)valores.size();
+// 			for(int j=0;j<valores.size();j++){
+// 				ranks[valores.get(j)/colunas][valores.get(j)%colunas]=rankAtual;
+// 			}				
+// 		}
+// 
+//  		matriz=execute_ksk(dados);
+// 
+// 		for(int i=0;i<ranks.length;i++){
+// 			for(int j=0;j<ranks[0].length;j++){
+// 				avgRanks[j]+=ranks[i][j];
+// 				//System.out.print(format(ranks[i][j])+"\t");
+// 			}
+// 			//System.out.println();
+//  		}
+//  		for(int i=0;i<avgRanks.length;i++){
+// 			avgRanks[i]/=ranks.length; //kruskal
+// 			//System.out.print(format(avgRanks[i])+"\t");
+// 		}
+// 		matrizGeral[index]=avgRanks;
+// 		
+// //		double[] ranksFinais=rankStatistics(avgRanks, matriz); comentei agora (antigo)
+// 		double[] ranksFinais=matriz[0];//=rankStatistics(avgRanks, matriz); comentei agora
+// 		
+// 		menorValor=Double.MAX_VALUE;
+// 		for(int j=0;j<colunas;j++)
+// 			if(ranksFinais[j] < menorValor)
+// 				menorValor=ranksFinais[j];
+//  		
+// 		for(int j=0;j<colunas;j++){
+// 			if(ranksFinais[j] == menorValor)
+// 				saida[j]="\\cellcolor{gray!30}\\textbf{"+format(avgRanks[j])+" ("+format(ranksFinais[j])+")"+"}";
+// 			else
+// 				saida[j]=format(avgRanks[j])+" ("+format(ranksFinais[j])+")";
+// 		}
+// 		
+//  		return saida;
 	
 	}
 	static double[] rankStatistics(double[] avgRanks, boolean[][] matriz){
@@ -324,7 +366,23 @@ public class kruskal_rank_full{
 		}
 		return medias;
 	}
-	public static boolean[][] execute_ksk(ArrayList<double[]> dados) throws IOException{
+	static double[] calcularDesvios(ArrayList<double[]> dados){
+		double[] desvios = new double[dados.get(0).length];
+		Arrays.fill(desvios,0);
+		for(int i=0;i<dados.get(0).length;i++){
+			double media=0;
+			for(int j=0;j<dados.size();j++){
+				media+=dados.get(j)[i];
+			}
+			media/=dados.size();
+			for(int j=0;j<dados.size();j++){
+				desvios[i]+=Math.pow(dados.get(j)[i]-media,2);
+			}
+			desvios[i]=Math.sqrt(desvios[i]/dados.size());
+		}
+		return desvios;
+	}
+	public static double[][] execute_ksk(ArrayList<double[]> dados) throws IOException{
 		try (FileWriter entrada = new FileWriter("temp.txt") ) {
 			for(int i=0;i<dados.size();i++){
 				for(int j=0;j<dados.get(i).length;j++){
@@ -333,9 +391,9 @@ public class kruskal_rank_full{
 				entrada.write("\n");
 			}
 		}
-		boolean[][] marcar = new boolean[dados.get(0).length][dados.get(0).length];
+		double[][] valores = new double[dados.get(0).length][dados.get(0).length];
 		try {
-			String comando="java ksk_full temp.txt";
+			String comando="java -cp ../statistics/kruskal ksk_full temp.txt";
 // 			String comando="java -cp /home/olacir/Dropbox/UFPR/Doutorado/mopso/assessment/statistics/kruskal ksk_full temp.txt";
  			Process p =  Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", comando});
  			p.waitFor();
@@ -352,8 +410,8 @@ public class kruskal_rank_full{
 // 						System.out.print(ln[i]+"\t");
 					int l=Integer.parseInt(line.split("\\s+")[0].split("-")[0])-1;
 					int c=Integer.parseInt(line.split("\\s+")[0].split("-")[1])-1;
-					marcar[c][l]=Boolean.parseBoolean(ln[ln.length-1]);
-					marcar[l][c]=Boolean.parseBoolean(ln[ln.length-1]);
+					valores[c][l]=Double.parseDouble(ln[1]);
+					valores[l][c]=Double.parseDouble(ln[1]);
 					
 // 					System.out.println(ln[ln.length-1]+"--"+marcar[c][l]+"("+(l+1)+","+(c+1)+")");
 					
@@ -362,9 +420,9 @@ public class kruskal_rank_full{
 				}
 			}
 			
-// 			for(int i=0;i<marcar.length;i++){
-// 				for(int j=0;j<marcar.length;j++)
-// 					System.out.print(marcar[i][j]+"\t");
+// 			for(int i=0;i<valores.length;i++){
+// 				for(int j=0;j<valores.length;j++)
+// 					System.out.print(valores[i][j]+"\t");
 // 				System.out.println();
 // 			}
 // 			System.out.println();
@@ -373,40 +431,7 @@ public class kruskal_rank_full{
 			if(!file.delete())
 				System.out.println("Temp file delete operation failed.");
 		}catch (Exception e){	e.printStackTrace();}
-		return marcar;
-	}
-	public static boolean[][] execute_fdr(double[][] dados) throws IOException{
-		try (FileWriter entrada = new FileWriter("temp.txt") ) {
-			for(int i=0;i<dados.length;i++){
-				for(int j=0;j<dados[i].length;j++){
-					entrada.write(dados[i][j]+" ");
-				}
-				entrada.write("\n");
-			}
-		}
-		boolean[][] marcar = new boolean[dados[0].length][dados[0].length];
-		try {
-			String comando="java ksk_full temp.txt";
- 			Process p =  Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", comando});
- 			p.waitFor();
- 			System.out.print(".");
- 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line;
-			while ( (line=br.readLine()) != null) {
-				if(line.split(" ")[0].split("-").length == 2 && line.split("-").length == 2){
-					String[] ln=line.split(" ");
-					int l=Integer.parseInt(line.split(" ")[0].split("-")[0])-1;
-					int c=Integer.parseInt(line.split(" ")[0].split("-")[1])-1;
-					marcar[c][l]=Boolean.parseBoolean(ln[ln.length-1]);
-					marcar[l][c]=Boolean.parseBoolean(ln[ln.length-1]);
-				}
-			}
-			
-			File file = new File("temp.txt");
-			if(!file.delete())
-				System.out.println("Temp file delete operation failed.");
-		}catch (Exception e){	e.printStackTrace();}
-		return marcar;
+		return valores;
 	}
 	public static double[] lineToDoubleVector(String line, int fator)throws IOException{
 		String campos[]=line.split(" ");
@@ -416,6 +441,8 @@ public class kruskal_rank_full{
 		return saida;
 	}
 	public static String format(double valor){
-		return String.format("%.2f", valor).replace(",",".").replace("e","E");
+// 		return String.format("%.6f", valor).replace(",",".").replace("e","E");
+//		return String.format("%.3e", valor).replace(",",".").replace("e","E");
+		return String.format("%.2e", valor).replace(",",".").replace("e","E");
 	}
 }

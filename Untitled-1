@@ -1,7 +1,6 @@
-<<<<<<< HEAD
+
 export PATH=$PATH:/usr/lib/jvm/jdk-20/bin/
-=======
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+
 export CLASSPATH=$CLASSPATH:$JMETALHOME\src
 export CLASSPATH=$CLASSPATH:$JMETALHOME
 export CLASSPATH=$CLASSPATH\src:Jama-1.0.3.jar
@@ -17,15 +16,10 @@ join all execution 2
 juntar tudo tudo
 join all metrics
 
-<<<<<<< HEAD
 
 
-/**
 FDEA - Seleção Aleatória (Original)
 FDEA1 - CROWDING DISTANCE
 FDEA2 - HIPERVOLUME
 
-*/
-=======
 export CLASSPATH=$CLASSPATH\src:Jama-1.0.3.jar
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a

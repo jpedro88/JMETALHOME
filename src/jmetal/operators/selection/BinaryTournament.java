@@ -90,7 +90,6 @@ public class BinaryTournament extends Selection {
 		solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 		comparator_ = new DominanceComparator();
 
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
 		Solution[] parents = new Solution[2];
 		parents[0] = population.get(pos1);
 		parents[1] = population.get(pos2);
@@ -107,10 +106,7 @@ public class BinaryTournament extends Selection {
 		else if (flag == 1)
 			parents[0] = solution2;
 		else
-<<<<<<< HEAD
 
-=======
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
 		if (PseudoRandom.randDouble()<0.5)
 			parents[0] = solution1;
 		else
@@ -121,12 +117,12 @@ public class BinaryTournament extends Selection {
 				solution4 = solutionSet.get(PseudoRandom.randInt(0,solutionSet.size()-1));
 
 		int flag1 = comparator_.compare(solution3,solution4);
-<<<<<<< HEAD
+
 		
 		if (flag1 == -1)
-=======
+
 		if (flag == -1)
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+
 			parents[1] = solution3;
 		else if (flag == 1)
 			parents[1] = solution4;

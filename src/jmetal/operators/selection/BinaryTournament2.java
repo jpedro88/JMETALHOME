@@ -176,7 +176,7 @@ public class BinaryTournament2 extends Selection {
 	
 		for (int i = 0; i < 2; i++) {
 			int index1 = PseudoRandom.randInt(0, solutionSet.size() - 1);
-			int index2 = PseudoRandom.randInt(0, solutionSet.size() - 1);
+			()		int index2 = PseudoRandom.randInt(0, solutionSet.size() - 1);
 	
 			Solution solution1 = solutionSet.get(index1);
 			Solution solution2 = solutionSet.get(index2);

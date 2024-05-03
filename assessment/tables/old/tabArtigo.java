@@ -21,20 +21,20 @@ static String table[][];
 static double medias[][];
 static boolean iguais[][];
 static double melhores[];
-	public static void main(String[] args) throws IOException{
-<<<<<<< HEAD
+public static void main(String[] args) throws IOException{
+
 //		String objectives[]={"2"};
 //		String objectives[]={"3"};
-		String objectives[]={"2","3","5","8","10","15"};
-//		String objectives[]={"2","3","5"};
-=======
-		String objectives[]={"2","3","5","8","10"};
+//		String objectives[]={"2","3","5","8","10","15"};
+		String objectives[]={"2","3","5"};
+
+//		String objectives[]={"2","3","5","8","10"};
 //		String objectives[]={"3"};
 //		String objectives[]={"2","3","5","8","9"};
->>>>>>> a64979edfe8013e57a9e2901e97fb3bcf603526a
+
 		//String metrics[] = {"$GD_p$", "$IGD_p$", "$R_2$","Hypervolume"};
 		//String metrics[] = {"$GD_p$", "$IGD_p$"};
-		String metrics[]={"$IGD_p$"};
+		String metrics[]={"Hypervolume"};
 		int DTLZ=1;
 		String[] titles=readTitles();
 		table = new String[2+(titles.length*objectives.length)][2+(metrics.length*DTLZ)];
